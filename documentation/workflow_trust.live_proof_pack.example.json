@@ -1,0 +1,45 @@
+{
+  "claim_snapshots": [
+    {
+      "snapshot_id": "pre_narrowing",
+      "claim": {
+        "sub": "repo:acme/repo:ref:refs/heads/feature-red",
+        "aud": "sts.amazonaws.com",
+        "workflow_ref": "acme/repo/.github/workflows/deploy.yml@refs/heads/feature-red",
+        "event_name": "pull_request_target"
+      }
+    },
+    {
+      "snapshot_id": "post_narrowing",
+      "claim": {
+        "sub": "repo:acme/repo:ref:refs/heads/main",
+        "aud": "sts.amazonaws.com",
+        "workflow_ref": "acme/repo/.github/workflows/deploy.yml@refs/heads/main",
+        "event_name": "workflow_dispatch"
+      }
+    }
+  ],
+  "trust_policies": [
+    {
+      "provider": "aws",
+      "name": "broad-subject-role",
+      "statements": [
+        {
+          "condition": {
+            "StringLike": {
+              "token.actions.githubusercontent.com:sub": "repo:acme/repo:ref:refs/heads/*",
+              "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "later_snapshot": {
+    "sub": "repo:acme/repo:ref:refs/heads/main",
+    "aud": "sts.amazonaws.com",
+    "iss": "https://token.actions.githubusercontent.com",
+    "exp": 1893466800,
+    "event_name": "workflow_dispatch"
+  }
+}

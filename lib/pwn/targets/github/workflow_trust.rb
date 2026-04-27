@@ -11,6 +11,7 @@ module PWN
       # Parse GitHub Actions workflows into a privilege/trust graph and
       # rank high-signal CI/CD exploit hypotheses.
       module WorkflowTrust
+        autoload :LiveProofPack, 'pwn/targets/github/workflow_trust/live_proof_pack'
         autoload :TransitionBundle, 'pwn/targets/github/workflow_trust/transition_bundle'
 
         UNTRUSTED_EVENT_NAMES = %w[pull_request pull_request_target issue_comment workflow_run].freeze
@@ -178,6 +179,20 @@ module PWN
 
             result[:transition_bundle] = transition_bundle
             result[:stale_acceptance_candidate_count] = transition_bundle[:stale_acceptance_candidate_count]
+
+            unless opts[:later_snapshot].nil? && opts[:token_snapshot].nil?
+              live_proof_pack = PWN::Targets::GitHub::WorkflowTrust::LiveProofPack.analyze(
+                transition_bundle: transition_bundle,
+                later_snapshot: opts[:later_snapshot] || opts[:token_snapshot],
+                trust_policies: trust_policies,
+                provider: opts[:provider],
+                allowed_audiences: opts[:allowed_audiences],
+                candidate_id: opts[:candidate_id]
+              )
+
+              result[:live_proof_pack] = live_proof_pack
+              result[:replay_ready] = live_proof_pack.dig(:replay_readiness, :ready) == true
+            end
           end
 
           result
@@ -218,6 +233,12 @@ module PWN
                 claim_snapshots: '/tmp/ordered_claim_snapshots.json',
                 trust_policies: '/tmp/trust_policies.json',
                 output_dir: '/tmp/workflow-trust-transition-bundle'
+              )
+
+              live_proof = PWN::Targets::GitHub::WorkflowTrust::LiveProofPack.run(
+                transition_bundle: transition_report,
+                later_snapshot: '/tmp/later_token_snapshot.json',
+                output_dir: '/tmp/workflow-trust-live-proof-pack'
               )
           HELP
         end
