@@ -6,6 +6,7 @@ module PWN
   # http://www.rubyinside.com/ruby-techniques-revealed-autoload-1652.html
   module Bounty
     autoload :LifecycleAuthzReplay, 'pwn/bounty/lifecycle_authz_replay'
+    autoload :ScopeIntel, 'pwn/bounty/scope_intel'
 
     # Display a List of Every PWN::Bounty Module
 

@@ -29,6 +29,7 @@ module PWN
       # programs_arr = PWN::WWW::HackerOne.get_bounty_programs(
       #   min_payouts_enabled: 'optional - only display programs where payouts are > $0.00 (defaults to false)',
       #   suppress_progress: 'optional - suppress output (defaults to false)',
+      #   ai_analysis_enabled: 'optional - attempt AI analysis of results (defaults to true)',
       #   proxy: 'optional - scheme://proxy_host:port || tor'
       # )
 
@@ -38,6 +39,9 @@ module PWN
 
         suppress_progress = opts[:suppress_progress] || false
         raise 'ERROR: suppress_progress should be true or false' unless [true, false].include?(suppress_progress)
+
+        ai_analysis_enabled = opts.key?(:ai_analysis_enabled) ? opts[:ai_analysis_enabled] : true
+        raise 'ERROR: ai_analysis_enabled should be true or false' unless [true, false].include?(ai_analysis_enabled)
 
         proxy = opts[:proxy]
 
@@ -135,9 +139,11 @@ module PWN
 
         programs_arr.sort_by! { |p| -p[:min_payout].gsub('$', '').gsub(',', '').to_f }
 
-        ai_analysis = PWN::AI::Agent::HackerOne.analyze(
+        ai_analysis = run_optional_ai_analysis(
+          enabled: ai_analysis_enabled,
           request: programs_arr.to_json,
-          type: :bounty_programs
+          type: :bounty_programs,
+          suppress_progress: suppress_progress
         )
         puts "\n\n#{ai_analysis}" unless ai_analysis.nil?
 
@@ -161,11 +167,17 @@ module PWN
       # Supported Method Parameters::
       # scope_details = PWN::WWW::HackerOne.get_scope_details(
       #   program_name: 'required - program name from #get_bounty_programs method',
+      #   ai_analysis_enabled: 'optional - attempt AI analysis of results (defaults to true)',
       #   proxy: 'optional - scheme://proxy_host:port || tor'
       # )
 
       public_class_method def self.get_scope_details(opts = {})
         program_name = opts[:program_name]
+        raise 'ERROR: program_name is required' if program_name.to_s.strip.empty?
+
+        ai_analysis_enabled = opts.key?(:ai_analysis_enabled) ? opts[:ai_analysis_enabled] : true
+        raise 'ERROR: ai_analysis_enabled should be true or false' unless [true, false].include?(ai_analysis_enabled)
+
         proxy = opts[:proxy]
 
         browser_obj = PWN::Plugins::TransparentBrowser.open(
@@ -278,7 +290,8 @@ module PWN
           scope_details: json_resp_hash
         }
 
-        ai_analysis = PWN::AI::Agent::HackerOne.analyze(
+        ai_analysis = run_optional_ai_analysis(
+          enabled: ai_analysis_enabled,
           request: json_resp.to_json,
           type: :scope_details
         )
@@ -304,11 +317,17 @@ module PWN
       # Supported Method Parameters::
       # hacktivity = PWN::WWW::HackerOne.get_hacktivity(
       #   program_name: 'required - program name from #get_bounty_programs method',
+      #   ai_analysis_enabled: 'optional - attempt AI analysis of results (defaults to true)',
       #   proxy: 'optional - scheme://proxy_host:port || tor'
       # )
 
       public_class_method def self.get_hacktivity(opts = {})
         program_name = opts[:program_name]
+        raise 'ERROR: program_name is required' if program_name.to_s.strip.empty?
+
+        ai_analysis_enabled = opts.key?(:ai_analysis_enabled) ? opts[:ai_analysis_enabled] : true
+        raise 'ERROR: ai_analysis_enabled should be true or false' unless [true, false].include?(ai_analysis_enabled)
+
         proxy = opts[:proxy]
 
         browser_obj = PWN::Plugins::TransparentBrowser.open(
@@ -424,7 +443,8 @@ module PWN
           hacktivity: json_resp_hash
         }
 
-        ai_analysis = PWN::AI::Agent::HackerOne.analyze(
+        ai_analysis = run_optional_ai_analysis(
+          enabled: ai_analysis_enabled,
           request: json_resp.to_json,
           type: :hacktivity
         )
@@ -578,6 +598,26 @@ module PWN
         raise e
       end
 
+      private_class_method def self.run_optional_ai_analysis(opts = {})
+        enabled = opts[:enabled]
+        request = opts[:request]
+        type = opts[:type]
+        suppress_progress = opts[:suppress_progress] || false
+
+        return nil unless enabled
+
+        PWN::AI::Agent::HackerOne.analyze(
+          request: request,
+          type: type
+        )
+      rescue LoadError, NameError, NoMethodError => e
+        puts "[*] AI analysis unavailable for #{type}: #{e.message}" unless suppress_progress
+        nil
+      rescue StandardError => e
+        puts "[*] AI analysis failed for #{type}: #{e.message}" unless suppress_progress
+        nil
+      end
+
       # Author(s):: 0day Inc. <support@0dayinc.com>
 
       public_class_method def self.authors
@@ -598,16 +638,19 @@ module PWN
           programs_arr = #{self}.get_bounty_programs(
             min_payouts_enabled: 'optional - only display programs where payouts are > $0.00 (defaults to false)',
             suppress_progress: 'optional - suppress output (defaults to false)',
+            ai_analysis_enabled: 'optional - attempt AI analysis of results (defaults to true)',
             proxy: 'optional - scheme://proxy_host:port || tor'
           )
 
           scope_details = #{self}.get_scope_details(
             program_name: 'required - program name from #get_bounty_programs method',
+            ai_analysis_enabled: 'optional - attempt AI analysis of results (defaults to true)',
             proxy: 'optional - scheme://proxy_host:port || tor'
           )
 
           hacktivity = #{self}.get_hacktivity(
             program_name: 'required - program name from #get_bounty_programs method',
+            ai_analysis_enabled: 'optional - attempt AI analysis of results (defaults to true)',
             proxy: 'optional - scheme://proxy_host:port || tor'
           )
 

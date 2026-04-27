@@ -1,0 +1,30 @@
+name: acronis
+scope_details:
+  data:
+    team:
+      structured_scopes_search:
+        nodes:
+          - identifier: https://beta-cloud.acronis.com
+            display_name: Acronis Beta Cloud
+            instruction: Use researcher owned account for beta testing.
+            cvss_score: 9.1
+            eligible_for_bounty: true
+            eligible_for_submission: true
+            asm_system_tags:
+              - name: web
+          - identifier: https://api-staging.acronis.com
+            display_name: Acronis Staging API
+            instruction: Authenticated staging API. Third-party integrations out of scope.
+            cvss_score: 8.8
+            eligible_for_bounty: true
+            eligible_for_submission: true
+            asm_system_tags:
+              - name: api
+          - identifier: https://support.vendor-example.com
+            display_name: Vendor Support Portal
+            instruction: Third-party vendor managed service out of scope and not eligible.
+            cvss_score: null
+            eligible_for_bounty: false
+            eligible_for_submission: false
+            asm_system_tags:
+              - name: other
