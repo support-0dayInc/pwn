@@ -11,6 +11,8 @@ module PWN
       # Parse GitHub Actions workflows into a privilege/trust graph and
       # rank high-signal CI/CD exploit hypotheses.
       module WorkflowTrust
+        autoload :TransitionBundle, 'pwn/targets/github/workflow_trust/transition_bundle'
+
         UNTRUSTED_EVENT_NAMES = %w[pull_request pull_request_target issue_comment workflow_run].freeze
         WRITE_PERMISSION_LEVELS = %w[write admin].freeze
 
@@ -122,6 +124,8 @@ module PWN
         public_class_method def self.evaluate_oidc_acceptance(opts = {})
           oidc_claims = resolve_structured_input(input: opts[:oidc_claims])
           trust_policies = resolve_structured_input(input: opts[:trust_policies])
+          claim_snapshots = resolve_structured_input(input: opts[:claim_snapshots])
+          claim_snapshots = oidc_claims if claim_snapshots.empty?
 
           policy_results = trust_policies.map do |policy|
             policy_hash = symbolize_obj(policy)
@@ -157,13 +161,26 @@ module PWN
             }
           end
 
-          {
+          result = {
             oidc_claim_count: oidc_claims.length,
             trust_policy_count: trust_policies.length,
             policy_results: policy_results,
             broad_acceptance_policy_count: policy_results.count { |result| result[:broad_sub_acceptance] },
             untrusted_claim_acceptance_count: policy_results.sum { |result| result[:accepted_untrusted_claim_count] }
           }
+
+          if claim_snapshots.length >= 2
+            transition_bundle = PWN::Targets::GitHub::WorkflowTrust::TransitionBundle.analyze(
+              claim_snapshots: claim_snapshots,
+              trust_policies: trust_policies,
+              transition_fields: opts[:transition_fields]
+            )
+
+            result[:transition_bundle] = transition_bundle
+            result[:stale_acceptance_candidate_count] = transition_bundle[:stale_acceptance_candidate_count]
+          end
+
+          result
         rescue StandardError => e
           raise e
         end
@@ -195,6 +212,12 @@ module PWN
               oidc_eval = PWN::Targets::GitHub::WorkflowTrust.evaluate_oidc_acceptance(
                 oidc_claims: '/tmp/oidc_claims.json',
                 trust_policies: '/tmp/trust_policies.json'
+              )
+
+              transition_report = PWN::Targets::GitHub::WorkflowTrust::TransitionBundle.run(
+                claim_snapshots: '/tmp/ordered_claim_snapshots.json',
+                trust_policies: '/tmp/trust_policies.json',
+                output_dir: '/tmp/workflow-trust-transition-bundle'
               )
           HELP
         end

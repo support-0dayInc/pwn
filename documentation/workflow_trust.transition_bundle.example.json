@@ -1,0 +1,40 @@
+{
+  "claim_snapshots": [
+    {
+      "snapshot_id": "pre_narrowing",
+      "captured_at": "2026-04-27T11:00:00Z",
+      "claim": {
+        "sub": "repo:acme/repo:ref:refs/heads/feature-red",
+        "aud": "sts.amazonaws.com",
+        "workflow_ref": "acme/repo/.github/workflows/deploy.yml@refs/heads/feature-red",
+        "event_name": "pull_request_target"
+      }
+    },
+    {
+      "snapshot_id": "post_narrowing",
+      "captured_at": "2026-04-27T11:10:00Z",
+      "claim": {
+        "sub": "repo:acme/repo:ref:refs/heads/main",
+        "aud": "sts.amazonaws.com",
+        "workflow_ref": "acme/repo/.github/workflows/deploy.yml@refs/heads/main",
+        "event_name": "workflow_dispatch"
+      }
+    }
+  ],
+  "trust_policies": [
+    {
+      "provider": "aws",
+      "name": "broad-subject-role",
+      "statements": [
+        {
+          "condition": {
+            "StringLike": {
+              "token.actions.githubusercontent.com:sub": "repo:acme/repo:ref:refs/heads/*",
+              "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
