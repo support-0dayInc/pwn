@@ -1,0 +1,61 @@
+{
+  "diff_report": {
+    "run_id": "graphql-authz-diff-demo",
+    "matrix": [
+      {
+        "checkpoint": "post_change_t0",
+        "operation_id": "team_private",
+        "operation_name": "TeamPrivate",
+        "actor_results": [
+          {
+            "actor": "revoked_user",
+            "expected_access": false,
+            "status": "denied",
+            "evidence_path": "/tmp/evidence/team_private.json"
+          }
+        ]
+      },
+      {
+        "checkpoint": "post_change_t0",
+        "operation_id": "admin_secrets",
+        "operation_name": "AdminSecrets",
+        "actor_results": [
+          {
+            "actor": "revoked_user",
+            "expected_access": false,
+            "status": "accessible",
+            "evidence_path": "/tmp/evidence/admin_secrets.json"
+          }
+        ]
+      }
+    ],
+    "findings": [
+      {
+        "id": "post_change_t0:admin_secrets:revoked_user:unexpected_access",
+        "checkpoint": "post_change_t0",
+        "operation_id": "admin_secrets",
+        "operation_name": "AdminSecrets",
+        "actor": "revoked_user"
+      }
+    ]
+  },
+  "surface_evidence": [
+    {
+      "operation_id": "team_private",
+      "route_family": "direct"
+    },
+    {
+      "operation_id": "admin_secrets",
+      "route_family": "alternate"
+    }
+  ],
+  "object_seeds": [
+    {
+      "id": "t1",
+      "aliases": [
+        "team_private",
+        "admin_secrets"
+      ]
+    }
+  ]
+}

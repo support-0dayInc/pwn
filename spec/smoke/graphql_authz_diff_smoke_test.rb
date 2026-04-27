@@ -79,15 +79,20 @@ class GraphQLAuthzDiffSmokeTest < Minitest::Test
       when 'AdminSecrets'
         if actor == 'revoked_user'
           # intentionally vulnerable behavior for authz-diff detection
-          return [200, { 'Content-Type' => 'application/json' }, JSON.dump(data: { adminSecrets: [{ id: 's1', token: 'leaked' }] })]
+          return [200, { 'Content-Type' => 'application/json' }, JSON.dump(data: { adminSecrets: [{ id: 't1', token: 'leaked' }] })]
         end
 
-        return [200, { 'Content-Type' => 'application/json' }, JSON.dump(data: { adminSecrets: [{ id: 's1', token: 'owner-only' }] })]
+        return [200, { 'Content-Type' => 'application/json' }, JSON.dump(data: { adminSecrets: [{ id: 't1', token: 'owner-only' }] })]
       when 'TeamPrivate'
         if actor == 'revoked_user'
           denied = {
             errors: [{ message: 'Forbidden: viewer cannot access team data' }],
-            data: nil
+            data: {
+              team: {
+                id: 't1',
+                name: nil
+              }
+            }
           }
           return [200, { 'Content-Type' => 'application/json' }, JSON.dump(denied)]
         end
@@ -167,17 +172,40 @@ class GraphQLAuthzDiffSmokeTest < Minitest::Test
           }
         ],
         output_dir: tmp_dir,
-        run_id: 'graphql-authz-diff-smoke'
+        run_id: 'graphql-authz-diff-smoke',
+        surface_evidence: [
+          {
+            operation_id: 'team_private',
+            route_family: 'direct'
+          },
+          {
+            operation_id: 'admin_secrets',
+            route_family: 'alternate'
+          }
+        ],
+        object_seeds: [
+          {
+            id: 't1',
+            aliases: ['team_private', 'admin_secrets']
+          }
+        ]
       )
 
       assert_equal('graphql-authz-diff-smoke', report[:run_id])
       assert(report[:finding_count] >= 1)
       assert(report[:findings].any? { |finding| finding[:id].include?('admin_secrets:revoked_user:unexpected_access') })
+      assert(report[:cross_surface_family_count] >= 1)
+      assert(report[:cross_surface_reportable_count] >= 1)
+      assert_equal('cross_surface_authz_drift', report.dig(:cross_surface_object_lineage, :families, 0, :report_angle))
 
       json_report = File.join(tmp_dir, 'graphql-authz-diff-smoke', 'graphql_authz_diff.json')
       markdown_report = File.join(tmp_dir, 'graphql-authz-diff-smoke', 'graphql_authz_diff.md')
+      lineage_json = File.join(tmp_dir, 'graphql-authz-diff-smoke', 'cross_surface_object_lineage.json')
+      lineage_markdown = File.join(tmp_dir, 'graphql-authz-diff-smoke', 'cross_surface_object_lineage.md')
       assert(File.exist?(json_report))
       assert(File.exist?(markdown_report))
+      assert(File.exist?(lineage_json))
+      assert(File.exist?(lineage_markdown))
     end
   ensure
     server.close if server

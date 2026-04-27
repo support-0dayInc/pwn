@@ -9,6 +9,8 @@ module PWN
     # GraphQL actor/tenant authz diff engine that reuses LifecycleAuthzReplay
     # capture adapters and emits report-ready diff artifacts.
     module GraphQLAuthzDiff
+      autoload :CrossSurfaceObjectLineage, 'pwn/bounty/graphql_authz_diff/cross_surface_object_lineage'
+
       DEFAULT_CHECKPOINTS = ['pre_change'].freeze
 
       # Supported Method Parameters::
@@ -86,6 +88,16 @@ module PWN
           finding_count: analysis[:findings].length,
           findings: analysis[:findings]
         }
+
+        cross_surface_lineage = PWN::Bounty::GraphQLAuthzDiff::CrossSurfaceObjectLineage.run(
+          diff_report: diff_report,
+          surface_evidence: opts[:surface_evidence],
+          object_seeds: opts[:object_seeds],
+          output_dir: run_obj[:run_root]
+        )
+        diff_report[:cross_surface_object_lineage] = cross_surface_lineage
+        diff_report[:cross_surface_family_count] = cross_surface_lineage[:family_count]
+        diff_report[:cross_surface_reportable_count] = cross_surface_lineage[:reportable_candidate_count]
 
         write_json(
           path: File.join(run_obj[:run_root], 'graphql_authz_diff.json'),
@@ -205,6 +217,13 @@ module PWN
               actors: [...],
               operations: [...],
               checkpoints: ['pre_change']
+            )
+
+            lineage = PWN::Bounty::GraphQLAuthzDiff::CrossSurfaceObjectLineage.run(
+              diff_report: diff_report,
+              surface_evidence: '/tmp/surface_evidence.json',
+              object_seeds: '/tmp/object_seeds.json',
+              output_dir: '/tmp/graphql-authz-diff'
             )
         HELP
       end
