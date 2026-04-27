@@ -1,0 +1,16 @@
+# Example inputs for PWN::Targets::GitHub::WorkflowTrust.scan_repo
+
+oidc_claims:
+  - sub: repo:acme/repo:ref:refs/heads/feature-x
+    aud: sts.amazonaws.com
+    event_name: pull_request_target
+    workflow_ref: acme/repo/.github/workflows/ci.yml@refs/heads/main
+
+trust_policies:
+  - provider: aws
+    name: broad-oidc-role
+    statements:
+      - condition:
+          StringLike:
+            token.actions.githubusercontent.com:sub: repo:acme/repo:*
+            token.actions.githubusercontent.com:aud: sts.amazonaws.com
