@@ -1,0 +1,47 @@
+{
+  "workflows": [
+    {
+      "file_name": "ci.yml",
+      "workflow_name": "CI",
+      "on": {
+        "pull_request_target": null
+      },
+      "permissions": {
+        "contents": "read"
+      },
+      "jobs": {
+        "build": {
+          "steps": [
+            {
+              "uses": "actions/upload-artifact@v4"
+            }
+          ]
+        },
+        "call_deploy": {
+          "uses": "./.github/workflows/deploy.yml",
+          "secrets": "inherit"
+        }
+      }
+    },
+    {
+      "file_name": "deploy.yml",
+      "workflow_name": "Deploy",
+      "on": {
+        "workflow_call": null
+      },
+      "permissions": {
+        "id-token": "write",
+        "contents": "write"
+      },
+      "jobs": {
+        "deploy": {
+          "steps": [
+            {
+              "run": "echo deploy"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

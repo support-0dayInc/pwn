@@ -12,6 +12,7 @@ module PWN
       # rank high-signal CI/CD exploit hypotheses.
       module WorkflowTrust
         autoload :LiveProofPack, 'pwn/targets/github/workflow_trust/live_proof_pack'
+        autoload :ReusableWorkflowLineage, 'pwn/targets/github/workflow_trust/reusable_workflow_lineage'
         autoload :TransitionBundle, 'pwn/targets/github/workflow_trust/transition_bundle'
 
         UNTRUSTED_EVENT_NAMES = %w[pull_request pull_request_target issue_comment workflow_run].freeze
@@ -45,6 +46,10 @@ module PWN
             oidc_eval: oidc_eval
           )
 
+          reusable_workflow_lineage = PWN::Targets::GitHub::WorkflowTrust::ReusableWorkflowLineage.analyze(
+            workflows: workflows
+          )
+
           report = {
             scanned_at: Time.now.utc.iso8601,
             repo_path: File.expand_path(repo_path),
@@ -55,6 +60,7 @@ module PWN
               edges: graph[:edges]
             },
             oidc_acceptance: oidc_eval,
+            reusable_workflow_lineage: reusable_workflow_lineage,
             finding_count: findings.length,
             findings: findings.sort_by { |finding| [-severity_rank(finding[:severity]), finding[:id]] }
           }
@@ -239,6 +245,11 @@ module PWN
                 transition_bundle: transition_report,
                 later_snapshot: '/tmp/later_token_snapshot.json',
                 output_dir: '/tmp/workflow-trust-live-proof-pack'
+              )
+
+              lineage = PWN::Targets::GitHub::WorkflowTrust::ReusableWorkflowLineage.scan_repo(
+                repo_path: '/path/to/repo',
+                output_dir: '/tmp/workflow-trust-lineage'
               )
           HELP
         end
@@ -721,6 +732,25 @@ module PWN
           lines << "- OIDC Claims: `#{oidc_summary[:oidc_claim_count]}`"
           lines << "- Broad Acceptance Policies: `#{oidc_summary[:broad_acceptance_policy_count]}`"
           lines << "- Untrusted Claim Acceptances: `#{oidc_summary[:untrusted_claim_acceptance_count]}`"
+
+          lines << ''
+          lines << '## Reusable Workflow Lineage'
+          lineage = symbolize_obj(report[:reusable_workflow_lineage] || {})
+          lines << "- Paths: `#{lineage[:path_count] || 0}`"
+          lines << "- Critical Paths: `#{lineage[:critical_path_count] || 0}`"
+          lines << "- High Paths: `#{lineage[:high_path_count] || 0}`"
+
+          top_paths = Array(lineage[:paths]).first(5)
+          if top_paths.empty?
+            lines << '- No cross-workflow escalation paths ranked in this pass.'
+          else
+            top_paths.each do |path|
+              path_hash = symbolize_obj(path)
+              lines << "- [#{path_hash[:severity].to_s.upcase}] #{path_hash[:title]}"
+              lines << "  - chain: `#{path_hash[:chain_type]}` sink: `#{path_hash[:preferred_sink_kind]}` upgrade: `#{path_hash[:upgrade_priority]}`"
+              lines << "  - next test: #{path_hash[:best_next_owned_test]}"
+            end
+          end
 
           lines.join("\n")
         rescue StandardError => e
