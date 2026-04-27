@@ -1,0 +1,24 @@
+{
+  "observations": [
+    {
+      "payload_id": "aws_imds_identity",
+      "url": "http://169.254.169.254/latest/dynamic/instance-identity/document",
+      "body": "{\"accountId\":\"123456789012\",\"region\":\"us-east-1\",\"instanceId\":\"i-0abc123\",\"availabilityZone\":\"us-east-1a\"}"
+    },
+    {
+      "payload_id": "aws_imds_role_creds",
+      "url": "http://169.254.169.254/latest/meta-data/iam/security-credentials/app-prod-role",
+      "body": "{\"AccessKeyId\":\"ASIAXXX\",\"SecretAccessKey\":\"secret\",\"Token\":\"token\"}"
+    }
+  ],
+  "findings": [
+    {
+      "payload_id": "aws_imds_identity",
+      "classification": "metadata"
+    },
+    {
+      "payload_id": "aws_imds_role_creds",
+      "classification": "metadata"
+    }
+  ]
+}

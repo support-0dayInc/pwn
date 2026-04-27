@@ -12,6 +12,8 @@ module PWN
     # Config-driven SSRF payload planner and evidence analyzer designed
     # for fast report-ready bug bounty triage.
     module SSRFChain
+      autoload :CloudImpactProfiler, 'pwn/http/ssrf_chain/cloud_impact_profiler'
+
       DEFAULT_CLOUD_FOCUS = %w[aws gcp azure].freeze
       DEFAULT_MAX_PAYLOADS = 18
 
@@ -318,6 +320,22 @@ module PWN
       end
 
       # Supported Method Parameters::
+      # cloud_impact = PWN::HTTP::SSRFChain.profile_cloud_impact(
+      #   observations: observations,
+      #   findings: findings
+      # )
+      public_class_method def self.profile_cloud_impact(opts = {})
+        PWN::HTTP::SSRFChain::CloudImpactProfiler.profile(
+          observations: opts[:observations],
+          findings: opts[:findings],
+          sink_url: opts[:sink_url],
+          cloud_focus: opts[:cloud_focus]
+        )
+      rescue StandardError => e
+        raise e
+      end
+
+      # Supported Method Parameters::
       # report = PWN::HTTP::SSRFChain.run(
       #   sink_family: 'webhook',
       #   collaborator_domain: 'oast.example',
@@ -339,6 +357,13 @@ module PWN
 
         plan = build_probe_plan(profile)
         analysis = analyze_observations(plan: plan, observations: profile[:observations])
+        cloud_impact = profile_cloud_impact(
+          observations: profile[:observations],
+          findings: analysis[:findings],
+          sink_url: plan[:sink_url],
+          cloud_focus: plan[:cloud_focus]
+        )
+        primary_impact = symbolize_obj(cloud_impact[:primary_assessment] || {})
 
         report = {
           generated_at: Time.now.utc.iso8601,
@@ -349,6 +374,13 @@ module PWN
           finding_count: analysis[:finding_count],
           classifications: analysis[:classification_counts],
           findings: analysis[:findings],
+          impact_label: cloud_impact[:highest_impact_label],
+          identity: primary_impact[:identity],
+          privilege_guess: primary_impact[:privilege_guess],
+          follow_up_requests: primary_impact[:follow_up_requests],
+          negative_controls: primary_impact[:negative_controls],
+          report_ready_summary: primary_impact[:report_ready_summary],
+          cloud_impact: cloud_impact,
           plan: plan
         }
 
@@ -359,6 +391,7 @@ module PWN
 
           write_json(path: File.join(run_root, 'ssrf_chain_plan.json'), obj: plan)
           write_json(path: File.join(run_root, 'ssrf_chain_report.json'), obj: report)
+          write_json(path: File.join(run_root, 'ssrf_chain_cloud_impact.json'), obj: cloud_impact)
           write_json(path: File.join(run_root, 'ssrf_chain_observations.json'), obj: profile[:observations])
           write_markdown(path: File.join(run_root, 'ssrf_chain_report.md'), report: report)
 
@@ -403,6 +436,16 @@ module PWN
                 }
               ],
               output_dir: '/tmp/ssrf-chain'
+            )
+
+            cloud_impact = PWN::HTTP::SSRFChain.profile_cloud_impact(
+              observations: [
+                {
+                  payload_id: 'aws_imds_identity',
+                  body: '{"accountId":"123456789012","region":"us-east-1"}'
+                }
+              ],
+              findings: report[:findings]
             )
         HELP
       end
@@ -798,6 +841,31 @@ module PWN
         else
           tier_one.each do |payload|
             lines << "- `#{payload[:id]}` #{payload[:method]} #{payload[:url]}"
+          end
+        end
+
+        lines << ''
+        lines << '## Cloud Impact Profile'
+        cloud_impact = symbolize_obj(report[:cloud_impact] || {})
+        primary_impact = symbolize_obj(cloud_impact[:primary_assessment] || {})
+        if primary_impact.empty?
+          lines << '- No provider-specific cloud impact material identified yet.'
+        else
+          lines << "- Impact Label: `#{cloud_impact[:highest_impact_label]}`"
+          lines << "- Provider: `#{primary_impact[:provider]}`"
+          lines << "- Identity: `#{symbolize_obj(primary_impact[:identity] || {}).to_json}`"
+          lines << "- Privilege Guess: `#{primary_impact[:privilege_guess]}`"
+
+          lines << ''
+          lines << '### Follow-up Requests'
+          Array(primary_impact[:follow_up_requests]).each do |request|
+            lines << "- #{request}"
+          end
+
+          lines << ''
+          lines << '### Negative Controls'
+          Array(primary_impact[:negative_controls]).each do |control|
+            lines << "- #{control}"
           end
         end
 
