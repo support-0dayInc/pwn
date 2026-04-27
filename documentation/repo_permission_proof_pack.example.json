@@ -1,0 +1,23 @@
+{
+  "repo": {
+    "owner": "acme",
+    "name": "widgets",
+    "actor": "revoked_user"
+  },
+  "repo_rest_probe": {
+    "http_status": 403,
+    "body": "{\"message\":\"Not Found\"}"
+  },
+  "repo_graphql_probe": {
+    "http_status": 200,
+    "body": "{\"data\":{\"repository\":null},\"errors\":[{\"message\":\"Could not resolve to a Repository with the name 'widgets'.\"}]}"
+  },
+  "object_probes": [
+    {
+      "id": "pull_123",
+      "surface": "pull_html",
+      "status": "accessible",
+      "evidence_path": "artifacts/post_change_t0/revoked_user/pull_123/response.txt"
+    }
+  ]
+}
