@@ -8,14 +8,57 @@ campaign:
 actors:
   - id: owner
     label: Repository owner account
+    session:
+      headers:
+        X-Actor: owner
+      cookies:
+        session_owner: REPLACE_ME
   - id: revoked_user
     label: User removed from repository
+    session:
+      headers:
+        X-Actor: revoked_user
+      cookies:
+        session_revoked: REPLACE_ME
 
 surfaces:
   - id: repo_settings_page
     label: Repository settings HTML page
+    adapter:
+      type: browser
+      use_transparent_browser: false
+      request:
+        method: GET
+        url: https://github.com/acme/private-repo/settings
+
   - id: repo_metadata_api
     label: Repository metadata API endpoint
+    adapter:
+      type: http
+      request:
+        method: GET
+        url: https://api.github.example/repos/acme/private-repo
+        headers:
+          Accept: application/json
+
+  - id: repo_collaborators_graphql
+    label: GraphQL collaborator query
+    adapter:
+      type: graphql
+      url: https://github.example/api/graphql
+      operation_name: RepoCollaborators
+      query: |
+        query RepoCollaborators($owner: String!, $name: String!) {
+          repository(owner: $owner, name: $name) {
+            name
+            collaborators(first: 5) {
+              nodes { login }
+            }
+          }
+        }
+      variables:
+        owner: acme
+        name: private-repo
 
 checkpoints:
   - pre_change

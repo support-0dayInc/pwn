@@ -11,6 +11,8 @@ module PWN
     # pre/post state transitions (e.g., collaborator removal, role change,
     # project visibility flips) with report-ready artifacts.
     module LifecycleAuthzReplay
+      autoload :CaptureAdapters, 'pwn/bounty/lifecycle_authz_replay/capture_adapters'
+
       DEFAULT_CHECKPOINTS = %w[pre_change post_change_t0 post_change_tn].freeze
       STATUS_VALUES = %w[missing accessible denied error unknown].freeze
 
@@ -71,6 +73,170 @@ module PWN
 
         run_obj
       rescue StandardError => e
+        raise e
+      end
+
+      # Supported Method Parameters::
+      # execution = PWN::Bounty::LifecycleAuthzReplay.execute_capture_matrix(
+      #   run_obj: run_obj,
+      #   checkpoint: 'post_change_t0', # optional filter
+      #   actor: 'revoked_user', # optional filter
+      #   surface: 'repo_settings_page', # optional filter
+      #   fail_fast: false
+      # )
+      public_class_method def self.execute_capture_matrix(opts = {})
+        run_obj = opts[:run_obj]
+        raise 'run_obj is required' unless run_obj.is_a?(Hash)
+
+        checkpoint_filter = normalize_token(opts[:checkpoint])
+        actor_filter = normalize_token(opts[:actor])
+        surface_filter = normalize_token(opts[:surface])
+        fail_fast = opts[:fail_fast] == true
+        capture_proc = opts[:capture_proc]
+
+        target_cells = run_obj[:coverage_matrix][:cells].select do |cell|
+          checkpoint_match = checkpoint_filter.empty? || cell[:checkpoint] == checkpoint_filter
+          actor_match = actor_filter.empty? || cell[:actor] == actor_filter
+          surface_match = surface_filter.empty? || cell[:surface] == surface_filter
+          checkpoint_match && actor_match && surface_match
+        end
+
+        execution = {
+          run_id: run_obj[:run_id],
+          started_at: Time.now.utc.iso8601,
+          attempted_cells: target_cells.length,
+          completed_cells: 0,
+          failed_cells: 0,
+          cell_results: []
+        }
+
+        target_cells.each do |cell|
+          result = execute_capture_cell(
+            run_obj: run_obj,
+            checkpoint: cell[:checkpoint],
+            actor: cell[:actor],
+            surface: cell[:surface],
+            capture_proc: capture_proc
+          )
+          execution[:completed_cells] += 1
+          execution[:failed_cells] += 1 if result[:status] == 'error'
+          execution[:cell_results] << result
+        rescue StandardError => e
+          execution[:completed_cells] += 1
+          execution[:failed_cells] += 1
+          execution[:cell_results] << {
+            checkpoint: cell[:checkpoint],
+            actor: cell[:actor],
+            surface: cell[:surface],
+            status: 'error',
+            notes: e.message
+          }
+          raise e if fail_fast
+        end
+
+        execution[:completed_at] = Time.now.utc.iso8601
+        write_json(path: File.join(run_obj[:run_root], 'capture_execution.json'), obj: execution)
+        execution
+      rescue StandardError => e
+        raise e
+      end
+
+      # Supported Method Parameters::
+      # result = PWN::Bounty::LifecycleAuthzReplay.execute_capture_cell(
+      #   run_obj: run_obj,
+      #   checkpoint: 'post_change_t0',
+      #   actor: 'revoked_user',
+      #   surface: 'repo_settings_page'
+      # )
+      public_class_method def self.execute_capture_cell(opts = {})
+        run_obj = opts[:run_obj]
+        raise 'run_obj is required' unless run_obj.is_a?(Hash)
+
+        checkpoint = normalize_token(opts[:checkpoint])
+        actor = normalize_token(opts[:actor])
+        surface = normalize_token(opts[:surface])
+        capture_proc = opts[:capture_proc]
+
+        raise 'checkpoint is required' if checkpoint.empty?
+        raise 'actor is required' if actor.empty?
+        raise 'surface is required' if surface.empty?
+
+        actor_record = find_named_record(records: run_obj[:plan][:actors], id: actor)
+        raise "unknown actor: #{actor}" if actor_record.nil?
+
+        surface_record = find_named_record(records: run_obj[:plan][:surfaces], id: surface)
+        raise "unknown surface: #{surface}" if surface_record.nil?
+
+        adapter_result = if capture_proc.respond_to?(:call)
+                           capture_proc.call(
+                             run_obj: run_obj,
+                             checkpoint: checkpoint,
+                             actor: actor,
+                             surface: surface,
+                             actor_record: actor_record,
+                             surface_record: surface_record
+                           )
+                         else
+                           execute_capture_adapter(
+                             run_obj: run_obj,
+                             checkpoint: checkpoint,
+                             actor_record: actor_record,
+                             surface_record: surface_record
+                           )
+                         end
+
+        adapter_result = symbolize_obj(adapter_result || {})
+        adapter_status = normalize_token(adapter_result[:status])
+        adapter_status = 'unknown' if adapter_status.empty?
+        adapter_status = 'error' unless STATUS_VALUES.include?(adapter_status)
+
+        evidence = record_observation(
+          run_obj: run_obj,
+          checkpoint: checkpoint,
+          actor: actor,
+          surface: surface,
+          status: adapter_status,
+          request: adapter_result[:request] || {},
+          response: adapter_result[:response] || {},
+          notes: adapter_result[:notes].to_s,
+          artifact_paths: adapter_result[:artifact_paths] || []
+        )
+
+        {
+          checkpoint: checkpoint,
+          actor: actor,
+          surface: surface,
+          status: adapter_status,
+          evidence_path: File.join(run_obj[:artifacts_dir], checkpoint, actor, "#{surface}.json"),
+          adapter_result: adapter_result,
+          evidence: evidence
+        }
+      rescue StandardError => e
+        error_evidence = {
+          request: {},
+          response: {},
+          notes: "capture error: #{e.message}",
+          artifact_paths: []
+        }
+
+        if run_obj.is_a?(Hash)
+          begin
+            record_observation(
+              run_obj: run_obj,
+              checkpoint: checkpoint,
+              actor: actor,
+              surface: surface,
+              status: 'error',
+              request: error_evidence[:request],
+              response: error_evidence[:response],
+              notes: error_evidence[:notes],
+              artifact_paths: error_evidence[:artifact_paths]
+            )
+          rescue StandardError
+            # ignore nested observation failures here and re-raise root issue
+          end
+        end
+
         raise e
       end
 
@@ -271,6 +437,11 @@ module PWN
               artifact_paths: ['/tmp/screenshot.png']
             )
 
+            PWN::Bounty::LifecycleAuthzReplay.execute_capture_matrix(
+              run_obj: run_obj,
+              checkpoint: 'post_change_t0' # optional filter
+            )
+
             summary = PWN::Bounty::LifecycleAuthzReplay.finalize_run(
               run_obj: run_obj
             )
@@ -296,6 +467,56 @@ module PWN
 
         coverage_matrix[:cells].find do |cell|
           cell[:checkpoint] == checkpoint && cell[:actor] == actor && cell[:surface] == surface
+        end
+      rescue StandardError => e
+        raise e
+      end
+
+      private_class_method def self.find_named_record(opts = {})
+        records = Array(opts[:records])
+        id = normalize_token(opts[:id])
+        records.find { |record| normalize_token(record[:id]) == id }
+      rescue StandardError => e
+        raise e
+      end
+
+      private_class_method def self.execute_capture_adapter(opts = {})
+        run_obj = opts[:run_obj]
+        checkpoint = opts[:checkpoint]
+        actor_record = opts[:actor_record]
+        surface_record = opts[:surface_record]
+
+        adapter_cfg = symbolize_obj(surface_record[:metadata][:adapter] || {})
+        adapter_type = normalize_token(adapter_cfg[:type] || adapter_cfg[:adapter_type])
+        raise "surface #{surface_record[:id]} missing adapter.type" if adapter_type.empty?
+
+        case adapter_type
+        when 'http'
+          CaptureAdapters::HTTP.capture(
+            run_obj: run_obj,
+            checkpoint: checkpoint,
+            actor_record: actor_record,
+            surface_record: surface_record,
+            adapter_cfg: adapter_cfg
+          )
+        when 'graphql'
+          CaptureAdapters::GraphQL.capture(
+            run_obj: run_obj,
+            checkpoint: checkpoint,
+            actor_record: actor_record,
+            surface_record: surface_record,
+            adapter_cfg: adapter_cfg
+          )
+        when 'browser'
+          CaptureAdapters::Browser.capture(
+            run_obj: run_obj,
+            checkpoint: checkpoint,
+            actor_record: actor_record,
+            surface_record: surface_record,
+            adapter_cfg: adapter_cfg
+          )
+        else
+          raise "unsupported adapter.type=#{adapter_type} for surface #{surface_record[:id]}"
         end
       rescue StandardError => e
         raise e
@@ -448,10 +669,17 @@ module PWN
           label = item[:name].to_s.strip if label.empty?
           label = id if label.empty?
 
+          metadata = symbolize_obj(item[:metadata] || {})
+          item.each do |key, value|
+            next if %i[id label name metadata].include?(key)
+
+            metadata[key] = symbolize_obj(value)
+          end
+
           normalized << {
             id: id,
             label: label,
-            metadata: symbolize_obj(item[:metadata] || {})
+            metadata: metadata
           }
         end
 
