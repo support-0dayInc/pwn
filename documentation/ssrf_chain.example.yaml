@@ -1,0 +1,29 @@
+sink_family: webhook
+sink_url: https://target.example/api/webhooks
+collaborator_domain: oast.example
+cloud_focus:
+  - aws
+  - gcp
+max_payloads: 12
+
+# Optional custom payload templates (otherwise module defaults are used)
+# payload_templates:
+#   - id: custom_internal_probe
+#     technique: internal_admin
+#     provider: generic
+#     impact_class: internal_admin
+#     expected_signal: internal admin login page
+#     method: GET
+#     url: http://127.0.0.1:8080/admin
+
+observations:
+  - payload_id: aws_imds_role_list
+    http_status: 200
+    body: app-prod-role
+    headers:
+      Content-Type: text/plain
+
+  - payload_id: blind_oob_callback
+    collaborator_hit: true
+    http_status: 0
+    body: ""

@@ -18,6 +18,7 @@ module PWN
   autoload :Config, 'pwn/config'
   autoload :Driver, 'pwn/driver'
   autoload :FFI, 'pwn/ffi'
+  autoload :HTTP, 'pwn/http'
   autoload :Plugins, 'pwn/plugins'
   autoload :Reports, 'pwn/reports'
   autoload :SAST, 'pwn/sast'
