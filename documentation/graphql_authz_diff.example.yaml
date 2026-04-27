@@ -1,0 +1,46 @@
+endpoint: https://target.example/graphql
+
+actors:
+  - id: owner
+    label: Owner
+    session:
+      headers:
+        Authorization: Bearer OWNER_TOKEN
+    expected_access_default: true
+
+  - id: revoked_user
+    label: Revoked User
+    session:
+      headers:
+        Authorization: Bearer REVOKED_TOKEN
+    expected_access_default: false
+
+operations:
+  - id: admin_secrets
+    operation_name: AdminSecrets
+    query: |
+      query AdminSecrets {
+        adminSecrets {
+          id
+          token
+        }
+      }
+    variables: {}
+    expected_access:
+      owner: true
+      revoked_user: false
+
+  - id: team_private
+    operation_name: TeamPrivate
+    query: |
+      query TeamPrivate($teamId: ID!) {
+        team(id: $teamId) {
+          id
+          name
+        }
+      }
+    variables:
+      teamId: t1
+    expected_access:
+      owner: true
+      revoked_user: false
