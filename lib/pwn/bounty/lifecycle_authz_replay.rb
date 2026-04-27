@@ -15,6 +15,143 @@ module PWN
 
       DEFAULT_CHECKPOINTS = %w[pre_change post_change_t0 post_change_tn].freeze
       STATUS_VALUES = %w[missing accessible denied error unknown].freeze
+      TRANSITION_TYPES = %w[invite accept promote demote revoke suspend transfer].freeze
+      DEFAULT_TRANSITION_CHECKPOINT_OFFSETS_MINUTES = [0, 10, 30, 60].freeze
+      ROUTE_PACK_DEFINITIONS = {
+        github: {
+          reviewer_revocation: {
+            transition: 'revoke',
+            actors: [
+              { id: 'owner', label: 'Repository Owner' },
+              { id: 'revoked_user', label: 'Revoked Reviewer' }
+            ],
+            surfaces: [
+              {
+                id: 'repo_collaborator_api',
+                label: 'Repository Collaborator API (direct)',
+                metadata: {
+                  route_category: 'direct',
+                  adapter: {
+                    type: 'http',
+                    request: {
+                      method: 'GET',
+                      url: '%{api_base}/repos/%{owner}/%{repo}/collaborators/%{subject_actor}'
+                    }
+                  }
+                }
+              },
+              {
+                id: 'repo_settings_html',
+                label: 'Repository Settings HTML (direct)',
+                metadata: {
+                  route_category: 'direct',
+                  adapter: {
+                    type: 'browser',
+                    use_transparent_browser: false,
+                    request: {
+                      method: 'GET',
+                      url: '%{target}/settings/access'
+                    }
+                  }
+                }
+              },
+              {
+                id: 'repo_notification_feed',
+                label: 'Repository Notification Feed (secondary)',
+                metadata: {
+                  route_category: 'secondary',
+                  adapter: {
+                    type: 'http',
+                    request: {
+                      method: 'GET',
+                      url: '%{target}/notifications'
+                    }
+                  }
+                }
+              },
+              {
+                id: 'repo_mentions_graphql',
+                label: 'Repository Mentions GraphQL (secondary)',
+                metadata: {
+                  route_category: 'secondary',
+                  adapter: {
+                    type: 'graphql',
+                    url: '%{api_base}/graphql',
+                    operation_name: 'RepoMentionsTimeline',
+                    query: %q(query RepoMentionsTimeline($owner: String!, $name: String!) {
+  repository(owner: $owner, name: $name) {
+    name
+    discussions(first: 5) {
+      nodes { id title }
+    }
+  }
+}
+),
+                    variables: {
+                      owner: '%{owner}',
+                      name: '%{repo}'
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        gitlab: {
+          member_revocation: {
+            transition: 'revoke',
+            actors: [
+              { id: 'maintainer', label: 'Project Maintainer' },
+              { id: 'revoked_member', label: 'Revoked Project Member' }
+            ],
+            surfaces: [
+              {
+                id: 'project_members_api',
+                label: 'Project Members API (direct)',
+                metadata: {
+                  route_category: 'direct',
+                  adapter: {
+                    type: 'http',
+                    request: {
+                      method: 'GET',
+                      url: '%{api_base}/projects/%{project_id}/members/%{subject_actor_id}'
+                    }
+                  }
+                }
+              },
+              {
+                id: 'project_settings_members',
+                label: 'Project Members Settings HTML (direct)',
+                metadata: {
+                  route_category: 'direct',
+                  adapter: {
+                    type: 'browser',
+                    use_transparent_browser: false,
+                    request: {
+                      method: 'GET',
+                      url: '%{target}/-/project_members'
+                    }
+                  }
+                }
+              },
+              {
+                id: 'project_activity_feed',
+                label: 'Project Activity Feed (secondary)',
+                metadata: {
+                  route_category: 'secondary',
+                  adapter: {
+                    type: 'http',
+                    request: {
+                      method: 'GET',
+                      url: '%{target}/-/activity'
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }.freeze
 
       # Supported Method Parameters::
       # plan = PWN::Bounty::LifecycleAuthzReplay.load_plan(
@@ -70,6 +207,168 @@ module PWN
         write_json(path: File.join(run_root, 'coverage_matrix.json'), obj: run_obj[:coverage_matrix])
         write_yaml(path: File.join(run_root, 'plan.normalized.yaml'), obj: plan)
         write_runbook(run_obj: run_obj)
+
+        run_obj
+      rescue StandardError => e
+        raise e
+      end
+
+      # Supported Method Parameters::
+      # route_pack = PWN::Bounty::LifecycleAuthzReplay.route_pack(
+      #   provider: :github,
+      #   lane: :reviewer_revocation
+      # )
+      public_class_method def self.route_pack(opts = {})
+        provider = normalize_token(opts[:provider])
+        lane = normalize_token(opts[:lane])
+
+        raise 'provider is required' if provider.empty?
+        raise 'lane is required' if lane.empty?
+
+        pack = symbolize_obj(ROUTE_PACK_DEFINITIONS.dig(provider.to_sym, lane.to_sym))
+        raise "unsupported route pack provider=#{provider} lane=#{lane}" if pack.nil?
+
+        pack[:provider] = provider
+        pack[:lane] = lane
+        pack
+      rescue StandardError => e
+        raise e
+      end
+
+      # Supported Method Parameters::
+      # timeline = PWN::Bounty::LifecycleAuthzReplay.transition_timeline(
+      #   transition: 'revoke',
+      #   checkpoint_offsets_minutes: [0, 10, 30, 60]
+      # )
+      public_class_method def self.transition_timeline(opts = {})
+        transition = normalize_token(opts[:transition])
+        transition = 'revoke' if transition.empty?
+        raise "unsupported transition=#{transition}" unless TRANSITION_TYPES.include?(transition)
+
+        offsets = Array(opts[:checkpoint_offsets_minutes]).map(&:to_i)
+        offsets = DEFAULT_TRANSITION_CHECKPOINT_OFFSETS_MINUTES if offsets.empty?
+        offsets = offsets.uniq.sort
+
+        timeline = [
+          {
+            checkpoint: 'pre_change',
+            phase: 'pre',
+            offset_minutes: nil,
+            expected_status: 'accessible'
+          }
+        ]
+
+        offsets.each do |offset|
+          checkpoint = checkpoint_for_offset(offset_minutes: offset)
+          timeline << {
+            checkpoint: checkpoint,
+            phase: 'post',
+            offset_minutes: offset,
+            expected_status: 'denied'
+          }
+        end
+
+        {
+          transition: transition,
+          checkpoint_offsets_minutes: offsets,
+          timeline: timeline
+        }
+      rescue StandardError => e
+        raise e
+      end
+
+      # Supported Method Parameters::
+      # plan = PWN::Bounty::LifecycleAuthzReplay.build_transition_plan(
+      #   provider: :github,
+      #   lane: :reviewer_revocation,
+      #   transition: :revoke,
+      #   target: 'https://github.example/org/repo',
+      #   route_vars: {
+      #     api_base: 'https://api.github.example',
+      #     owner: 'org',
+      #     repo: 'repo',
+      #     subject_actor: 'revoked_user'
+      #   }
+      # )
+      public_class_method def self.build_transition_plan(opts = {})
+        pack = route_pack(provider: opts[:provider], lane: opts[:lane])
+
+        transition = normalize_token(opts[:transition])
+        transition = normalize_token(pack[:transition]) if transition.empty?
+        transition = 'revoke' if transition.empty?
+
+        timeline_obj = transition_timeline(
+          transition: transition,
+          checkpoint_offsets_minutes: opts[:checkpoint_offsets_minutes]
+        )
+
+        route_vars = symbolize_obj(opts[:route_vars] || {})
+        target = opts[:target].to_s.strip
+        route_vars[:target] = target unless target.empty?
+
+        provider = pack[:provider]
+        lane = pack[:lane]
+        campaign_id = normalize_token(opts[:campaign_id])
+        campaign_id = "#{provider}_#{lane}_#{transition}" if campaign_id.empty?
+
+        campaign_label = opts[:campaign_label].to_s.strip
+        campaign_label = "#{provider} #{lane} #{transition}" if campaign_label.empty?
+
+        actors = symbolize_obj(opts[:actors] || pack[:actors])
+        surfaces = symbolize_obj(opts[:surfaces] || pack[:surfaces])
+        surfaces = render_surface_templates(surfaces: surfaces, route_vars: route_vars)
+
+        checkpoints = timeline_obj[:timeline].map { |entry| entry[:checkpoint] }
+        expected_denied_after = checkpoints.reject { |checkpoint| checkpoint == 'pre_change' }
+
+        plan = {
+          campaign: {
+            id: campaign_id,
+            label: campaign_label,
+            target: target,
+            change_event: transition,
+            notes: opts[:notes].to_s
+          },
+          actors: actors,
+          surfaces: surfaces,
+          checkpoints: checkpoints,
+          expected_denied_after: expected_denied_after,
+          metadata: {
+            transition_replay: {
+              provider: provider,
+              lane: lane,
+              transition: transition,
+              timeline: timeline_obj[:timeline],
+              route_vars: route_vars
+            }
+          }
+        }
+
+        normalize_plan(plan: plan)
+      rescue StandardError => e
+        raise e
+      end
+
+      # Supported Method Parameters::
+      # run_obj = PWN::Bounty::LifecycleAuthzReplay.start_transition_run(
+      #   provider: :github,
+      #   lane: :reviewer_revocation,
+      #   output_dir: '/tmp/evidence-bundles'
+      # )
+      public_class_method def self.start_transition_run(opts = {})
+        transition_plan = opts[:plan]
+        transition_plan ||= build_transition_plan(opts)
+
+        run_obj = start_run(
+          plan: transition_plan,
+          output_dir: opts[:output_dir],
+          run_id: opts[:run_id]
+        )
+
+        write_json(
+          path: File.join(run_obj[:run_root], 'transition_replay.json'),
+          obj: transition_plan[:metadata][:transition_replay]
+        )
 
         run_obj
       rescue StandardError => e
@@ -322,6 +621,7 @@ module PWN
         coverage_cells = run_obj[:coverage_matrix][:cells]
         missing_cells = coverage_cells.select { |cell| cell[:status] == 'missing' }
         stale_access_findings = find_stale_access_findings(run_obj: run_obj)
+        mixed_surface_findings = find_mixed_surface_findings(run_obj: run_obj)
 
         summary = {
           run_id: run_obj[:run_id],
@@ -334,9 +634,11 @@ module PWN
             cells: coverage_cells.length,
             captured_cells: coverage_cells.count { |cell| cell[:status] != 'missing' },
             missing_cells: missing_cells.length,
-            stale_access_findings: stale_access_findings.length
+            stale_access_findings: stale_access_findings.length,
+            mixed_surface_findings: mixed_surface_findings.length
           },
           stale_access_findings: stale_access_findings,
+          mixed_surface_findings: mixed_surface_findings,
           missing_cells: missing_cells
         }
 
@@ -425,6 +727,24 @@ module PWN
               output_dir: '/tmp/evidence-bundles'
             )
 
+            transition_plan = PWN::Bounty::LifecycleAuthzReplay.build_transition_plan(
+              provider: :github,
+              lane: :reviewer_revocation,
+              transition: :revoke,
+              target: 'https://github.example/acme/private-repo',
+              route_vars: {
+                api_base: 'https://api.github.example',
+                owner: 'acme',
+                repo: 'private-repo',
+                subject_actor: 'revoked_user'
+              }
+            )
+
+            run_obj = PWN::Bounty::LifecycleAuthzReplay.start_transition_run(
+              plan: transition_plan,
+              output_dir: '/tmp/evidence-bundles'
+            )
+
             PWN::Bounty::LifecycleAuthzReplay.record_observation(
               run_obj: run_obj,
               checkpoint: 'post_change_t0',
@@ -455,6 +775,52 @@ module PWN
         run_obj[:coverage_matrix][:cells].select do |cell|
           expected_denied_after.include?(cell[:checkpoint]) && cell[:status] == 'accessible'
         end
+      rescue StandardError => e
+        raise e
+      end
+
+      private_class_method def self.find_mixed_surface_findings(opts = {})
+        run_obj = opts[:run_obj]
+        expected_denied_after = Array(run_obj.dig(:plan, :expected_denied_after))
+        return [] if expected_denied_after.empty?
+
+        surface_metadata = Array(run_obj.dig(:plan, :surfaces)).each_with_object({}) do |surface, acc|
+          surface_hash = symbolize_obj(surface || {})
+          acc[surface_hash[:id].to_s] = symbolize_obj(surface_hash[:metadata] || {})
+        end
+
+        findings = []
+        expected_denied_after.each do |checkpoint|
+          checkpoint_cells = run_obj[:coverage_matrix][:cells].select { |cell| cell[:checkpoint] == checkpoint }
+          actors = checkpoint_cells.map { |cell| cell[:actor] }.uniq
+
+          actors.each do |actor|
+            actor_cells = checkpoint_cells.select { |cell| cell[:actor] == actor }
+
+            direct_denied = actor_cells.select do |cell|
+              metadata = symbolize_obj(surface_metadata[cell[:surface]] || {})
+              normalize_token(metadata[:route_category]) == 'direct' && cell[:status] == 'denied'
+            end
+
+            secondary_accessible = actor_cells.select do |cell|
+              metadata = symbolize_obj(surface_metadata[cell[:surface]] || {})
+              normalize_token(metadata[:route_category]) == 'secondary' && cell[:status] == 'accessible'
+            end
+
+            next if direct_denied.empty? || secondary_accessible.empty?
+
+            findings << {
+              checkpoint: checkpoint,
+              actor: actor,
+              direct_denied_surfaces: direct_denied.map { |cell| cell[:surface] },
+              secondary_accessible_surfaces: secondary_accessible.map { |cell| cell[:surface] },
+              direct_evidence_paths: direct_denied.map { |cell| cell[:evidence_path] }.compact,
+              secondary_evidence_paths: secondary_accessible.map { |cell| cell[:evidence_path] }.compact
+            }
+          end
+        end
+
+        findings
       rescue StandardError => e
         raise e
       end
@@ -561,6 +927,28 @@ module PWN
           "Run ID: `#{run_obj[:run_id]}`  " \
           "Campaign: `#{plan[:campaign][:id]}`  " \
           "Target: `#{plan[:campaign][:target]}`"
+
+        transition_replay = symbolize_obj(plan.dig(:metadata, :transition_replay) || {})
+        unless transition_replay.empty?
+          runbook_lines << ''
+          runbook_lines << '## Transition Replay Context'
+          runbook_lines << "- provider: `#{transition_replay[:provider]}`"
+          runbook_lines << "- lane: `#{transition_replay[:lane]}`"
+          runbook_lines << "- transition: `#{transition_replay[:transition]}`"
+
+          timeline = Array(transition_replay[:timeline])
+          unless timeline.empty?
+            runbook_lines << '- timeline:'
+            timeline.each do |entry|
+              checkpoint = entry[:checkpoint]
+              phase = entry[:phase]
+              offset = entry[:offset_minutes]
+              expected_status = entry[:expected_status]
+              runbook_lines << "  - #{checkpoint} phase=#{phase} offset_min=#{offset.inspect} expected=#{expected_status}"
+            end
+          end
+        end
+
         runbook_lines << ''
         runbook_lines << '## Checkpoint capture checklist'
 
@@ -643,7 +1031,74 @@ module PWN
           end
         end
 
+        lines << ''
+        lines << '## Mixed Surface Findings (Direct Denied + Secondary Visible)'
+        if summary[:mixed_surface_findings].to_a.empty?
+          lines << '- No mixed direct-denied/secondary-visible findings observed.'
+        else
+          summary[:mixed_surface_findings].each do |finding|
+            lines << "- checkpoint=`#{finding[:checkpoint]}` actor=`#{finding[:actor]}` direct_denied=`#{finding[:direct_denied_surfaces].join(',')}` secondary_visible=`#{finding[:secondary_accessible_surfaces].join(',')}`"
+          end
+        end
+
         File.write(File.join(run_obj[:run_root], 'REPORT.md'), lines.join("\n"))
+      rescue StandardError => e
+        raise e
+      end
+
+      private_class_method def self.checkpoint_for_offset(opts = {})
+        offset_minutes = opts[:offset_minutes].to_i
+        return 'post_change_t0' if offset_minutes <= 0
+
+        "post_change_t#{offset_minutes}m"
+      rescue StandardError => e
+        raise e
+      end
+
+      private_class_method def self.render_surface_templates(opts = {})
+        surfaces = symbolize_obj(opts[:surfaces] || [])
+        route_vars = symbolize_obj(opts[:route_vars] || {})
+
+        surfaces.map do |surface|
+          surface_hash = symbolize_obj(surface)
+          render_obj_templates(obj: surface_hash, route_vars: route_vars)
+        end
+      rescue StandardError => e
+        raise e
+      end
+
+      private_class_method def self.render_obj_templates(opts = {})
+        obj = opts[:obj]
+        route_vars = symbolize_obj(opts[:route_vars] || {})
+
+        case obj
+        when Array
+          obj.map { |entry| render_obj_templates(obj: entry, route_vars: route_vars) }
+        when Hash
+          obj.each_with_object({}) do |(key, value), accum|
+            accum[key] = render_obj_templates(obj: value, route_vars: route_vars)
+          end
+        when String
+          render_template_str(template: obj, route_vars: route_vars)
+        else
+          obj
+        end
+      rescue StandardError => e
+        raise e
+      end
+
+      private_class_method def self.render_template_str(opts = {})
+        template = opts[:template].to_s
+        route_vars = symbolize_obj(opts[:route_vars] || {})
+        return template unless template.include?('%{')
+
+        template.gsub(/%\{([^}]+)\}/) do |match|
+          key = Regexp.last_match(1).to_s
+          sym_key = key.to_sym
+          val = route_vars[sym_key]
+          val = route_vars[key] if val.nil?
+          val.nil? ? match : val.to_s
+        end
       rescue StandardError => e
         raise e
       end

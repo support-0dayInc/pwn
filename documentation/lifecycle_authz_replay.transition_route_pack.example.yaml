@@ -1,0 +1,54 @@
+# Example transition replay plan generated from:
+# PWN::Bounty::LifecycleAuthzReplay.build_transition_plan(provider: :github, lane: :reviewer_revocation, ...)
+
+campaign:
+  id: github_reviewer_revocation_revoke
+  label: github reviewer revocation revoke
+  target: https://github.example/acme/private-repo
+  change_event: revoke
+  notes: ""
+
+actors:
+  - id: owner
+    label: Repository Owner
+  - id: revoked_user
+    label: Revoked Reviewer
+
+surfaces:
+  - id: repo_collaborator_api
+    label: Repository Collaborator API (direct)
+    metadata:
+      route_category: direct
+      adapter:
+        type: http
+        request:
+          method: GET
+          url: https://api.github.example/repos/acme/private-repo/collaborators/revoked_user
+  - id: repo_notification_feed
+    label: Repository Notification Feed (secondary)
+    metadata:
+      route_category: secondary
+      adapter:
+        type: http
+        request:
+          method: GET
+          url: https://github.example/acme/private-repo/notifications
+
+checkpoints:
+  - pre_change
+  - post_change_t0
+  - post_change_t10m
+  - post_change_t30m
+  - post_change_t60m
+
+expected_denied_after:
+  - post_change_t0
+  - post_change_t10m
+  - post_change_t30m
+  - post_change_t60m
+
+metadata:
+  transition_replay:
+    provider: github
+    lane: reviewer_revocation
+    transition: revoke
