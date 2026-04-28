@@ -1,0 +1,39 @@
+campaign:
+  id: github_reviewer_revoke_completeness
+  label: GitHub Reviewer Revoke Completeness
+  target: https://github.example/acme/private-repo
+  change_event: revoke
+
+actors:
+  - id: owner
+  - id: revoked_user
+
+checkpoints:
+  - pre_change
+  - post_change_t0
+  - post_change_t10m
+
+expected_denied_after:
+  - post_change_t0
+  - post_change_t10m
+
+surfaces:
+  - id: repo_collaborator_api
+    label: Repository Collaborator API
+    metadata:
+      route_family: direct
+  - id: repo_mentions_graphql
+    label: Repository Mentions GraphQL
+    metadata:
+      route_family: secondary
+  - id: repo_notification_feed
+    label: Repository Notification Feed
+    metadata:
+      route_family: notification
+
+metadata:
+  route_pack_completeness:
+    family_impacts:
+      direct: report_blocker
+      secondary: confidence_drop
+      notification: nice_to_have

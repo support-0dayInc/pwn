@@ -12,6 +12,7 @@ module PWN
     # project visibility flips) with report-ready artifacts.
     module LifecycleAuthzReplay
       autoload :CaptureAdapters, 'pwn/bounty/lifecycle_authz_replay/capture_adapters'
+      autoload :RoutePackCompleteness, 'pwn/bounty/lifecycle_authz_replay/route_pack_completeness'
 
       DEFAULT_CHECKPOINTS = %w[pre_change post_change_t0 post_change_tn].freeze
       STATUS_VALUES = %w[missing accessible denied error unknown].freeze
@@ -623,6 +624,10 @@ module PWN
         stale_access_findings = find_stale_access_findings(run_obj: run_obj)
         mixed_surface_findings = find_mixed_surface_findings(run_obj: run_obj)
 
+        route_pack_completeness = PWN::Bounty::LifecycleAuthzReplay::RoutePackCompleteness.evaluate(
+          run_obj: run_obj
+        )
+
         summary = {
           run_id: run_obj[:run_id],
           completed_at: Time.now.utc.iso8601,
@@ -635,11 +640,15 @@ module PWN
             captured_cells: coverage_cells.count { |cell| cell[:status] != 'missing' },
             missing_cells: missing_cells.length,
             stale_access_findings: stale_access_findings.length,
-            mixed_surface_findings: mixed_surface_findings.length
+            mixed_surface_findings: mixed_surface_findings.length,
+            route_report_blockers: route_pack_completeness[:report_blocker_count],
+            route_confidence_drops: route_pack_completeness[:confidence_drop_count],
+            route_completion_score: route_pack_completeness[:completion_score]
           },
           stale_access_findings: stale_access_findings,
           mixed_surface_findings: mixed_surface_findings,
-          missing_cells: missing_cells
+          missing_cells: missing_cells,
+          route_pack_completeness: route_pack_completeness
         }
 
         write_json(path: File.join(run_obj[:run_root], 'SUMMARY.json'), obj: summary)
@@ -763,6 +772,10 @@ module PWN
             )
 
             summary = PWN::Bounty::LifecycleAuthzReplay.finalize_run(
+              run_obj: run_obj
+            )
+
+            completeness = PWN::Bounty::LifecycleAuthzReplay::RoutePackCompleteness.evaluate(
               run_obj: run_obj
             )
         HELP
@@ -1038,6 +1051,34 @@ module PWN
         else
           summary[:mixed_surface_findings].each do |finding|
             lines << "- checkpoint=`#{finding[:checkpoint]}` actor=`#{finding[:actor]}` direct_denied=`#{finding[:direct_denied_surfaces].join(',')}` secondary_visible=`#{finding[:secondary_accessible_surfaces].join(',')}`"
+          end
+        end
+
+        lines << ''
+        lines << '## Route Pack Completeness'
+        completeness = symbolize_obj(summary[:route_pack_completeness] || {})
+        lines << "- Completion Score: `#{completeness[:completion_score]}`"
+        lines << "- Report Blockers: `#{completeness[:report_blocker_count]}`"
+        lines << "- Confidence Drops: `#{completeness[:confidence_drop_count]}`"
+
+        if Array(completeness[:gap_findings]).empty?
+          lines << '- No route completeness gaps detected for configured families.'
+        else
+          Array(completeness[:gap_findings]).each do |gap|
+            gap_hash = symbolize_obj(gap)
+            lines << "- [#{gap_hash[:impact_level]}] family=`#{gap_hash[:route_family]}` reason=`#{gap_hash[:reason]}`"
+          end
+        end
+
+        lines << ''
+        lines << '### Post-change checklist'
+        post_checklist = symbolize_obj(completeness.dig(:checklists, :post_change) || {})
+        if Array(post_checklist[:items]).empty?
+          lines << '- No post-change checklist items pending.'
+        else
+          Array(post_checklist[:items]).each do |item|
+            item_hash = symbolize_obj(item)
+            lines << "- [#{item_hash[:impact_level]}] checkpoint=`#{item_hash[:checkpoint]}` actor=`#{item_hash[:actor]}` surface=`#{item_hash[:surface]}`"
           end
         end
 
