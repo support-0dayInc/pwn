@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-04-28T04:58:00Z",
+  "source_path_count": 2,
+  "planned_step_count": 2,
+  "safe_to_execute_count": 2,
+  "blocked_count": 0,
+  "steps": [
+    {
+      "id": "fixture_step_pack:reusable_ci_call_deploy",
+      "path_id": "reusable:ci.yml:call_deploy:./.github/workflows/deploy.yml",
+      "title": "Untrusted workflow_call chain reaches privileged reusable workflow sink",
+      "severity": "critical",
+      "chain_type": "reusable_workflow_call",
+      "preferred_sink_kind": "oidc_role_assumption",
+      "upgrade_priority": "p1",
+      "gate_status": "unknown",
+      "required_permissions": {
+        "id_token": "write",
+        "contents": "read",
+        "workflow_identity_scope": "job_workflow_ref + sub + aud"
+      },
+      "expected_claims": {
+        "sub": "repo:acme/repo:ref:refs/heads/fixture-canary",
+        "aud": "sts.amazonaws.com",
+        "job_workflow_ref": "acme/repo/.github/workflows/deploy.yml@refs/heads/main",
+        "repository_visibility": "private"
+      },
+      "upgrade_steps": [
+        "Create a dedicated benign fixture branch and isolate all validation commits.",
+        "Trigger workflow_call path from controlled untrusted entry (fork PR/comment) and capture downstream job trace.",
+        "Capture OIDC token issuance event and decode claims (sub/aud/job_workflow_ref) without exfiltrating secrets."
+      ],
+      "safe_fixture_notes": [
+        "Use only owned fixtures and non-production repos/roles for active validation.",
+        "Never execute destructive write actions; keep tests reversible and auditable."
+      ],
+      "stop_conditions": [
+        "Stop if fixture change leaks real credentials or sensitive production data.",
+        "Stop if workflow execution path diverges from expected untrusted trigger chain."
+      ],
+      "validation_checks": [
+        "Confirm untrusted trigger reaches intended workflow/job path.",
+        "Decode OIDC claims and compare against trust policy expectations (sub/aud/job_workflow_ref)."
+      ]
+    }
+  ],
+  "summary": {
+    "critical_paths": 1,
+    "high_paths": 1,
+    "p1_upgrades": 1
+  }
+}

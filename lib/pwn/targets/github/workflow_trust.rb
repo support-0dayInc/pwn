@@ -11,6 +11,7 @@ module PWN
       # Parse GitHub Actions workflows into a privilege/trust graph and
       # rank high-signal CI/CD exploit hypotheses.
       module WorkflowTrust
+        autoload :FixtureUpgradeStepPack, 'pwn/targets/github/workflow_trust/fixture_upgrade_step_pack'
         autoload :LiveProofPack, 'pwn/targets/github/workflow_trust/live_proof_pack'
         autoload :ReusableWorkflowLineage, 'pwn/targets/github/workflow_trust/reusable_workflow_lineage'
         autoload :TransitionBundle, 'pwn/targets/github/workflow_trust/transition_bundle'
@@ -50,6 +51,13 @@ module PWN
             workflows: workflows
           )
 
+          fixture_upgrade_step_pack = PWN::Targets::GitHub::WorkflowTrust::FixtureUpgradeStepPack.analyze(
+            lineage_report: reusable_workflow_lineage,
+            permission_gate: opts[:permission_gate],
+            oidc_claim_context: opts[:oidc_claim_context],
+            max_paths: opts[:fixture_max_paths]
+          )
+
           report = {
             scanned_at: Time.now.utc.iso8601,
             repo_path: File.expand_path(repo_path),
@@ -61,6 +69,7 @@ module PWN
             },
             oidc_acceptance: oidc_eval,
             reusable_workflow_lineage: reusable_workflow_lineage,
+            fixture_upgrade_step_pack: fixture_upgrade_step_pack,
             finding_count: findings.length,
             findings: findings.sort_by { |finding| [-severity_rank(finding[:severity]), finding[:id]] }
           }
@@ -250,6 +259,13 @@ module PWN
               lineage = PWN::Targets::GitHub::WorkflowTrust::ReusableWorkflowLineage.scan_repo(
                 repo_path: '/path/to/repo',
                 output_dir: '/tmp/workflow-trust-lineage'
+              )
+
+              fixture_steps = PWN::Targets::GitHub::WorkflowTrust::FixtureUpgradeStepPack.scan_repo(
+                repo_path: '/path/to/repo',
+                permission_gate: '/tmp/repo_permission_proof_pack.json',
+                oidc_claim_context: '/tmp/oidc_claims.json',
+                output_dir: '/tmp/workflow-trust-fixture-step-pack'
               )
           HELP
         end
@@ -749,6 +765,25 @@ module PWN
               lines << "- [#{path_hash[:severity].to_s.upcase}] #{path_hash[:title]}"
               lines << "  - chain: `#{path_hash[:chain_type]}` sink: `#{path_hash[:preferred_sink_kind]}` upgrade: `#{path_hash[:upgrade_priority]}`"
               lines << "  - next test: #{path_hash[:best_next_owned_test]}"
+            end
+          end
+
+          lines << ''
+          lines << '## Fixture Upgrade Step Pack'
+          fixture_pack = symbolize_obj(report[:fixture_upgrade_step_pack] || {})
+          lines << "- Planned Steps: `#{fixture_pack[:planned_step_count] || 0}`"
+          lines << "- Safe to Execute: `#{fixture_pack[:safe_to_execute_count] || 0}`"
+          lines << "- Blocked: `#{fixture_pack[:blocked_count] || 0}`"
+
+          top_steps = Array(fixture_pack[:steps]).first(5)
+          if top_steps.empty?
+            lines << '- No fixture upgrade steps generated in this pass.'
+          else
+            top_steps.each do |step|
+              step_hash = symbolize_obj(step)
+              lines << "- [#{step_hash[:severity].to_s.upcase}] #{step_hash[:title]}"
+              lines << "  - chain: `#{step_hash[:chain_type]}` sink: `#{step_hash[:preferred_sink_kind]}` gate: `#{step_hash[:gate_status]}`"
+              lines << "  - first validation check: #{Array(step_hash[:validation_checks]).first}"
             end
           end
 
