@@ -141,7 +141,7 @@ module PWN
 
             family_cells = coverage_cells.select do |cell|
               checkpoint = normalize_token(cell[:checkpoint])
-              surface_meta = symbolize_obj(surface_lookup[cell[:surface].to_s] || {})
+              surface_meta = surface_lookup_entry(surface_lookup: surface_lookup, surface_id: cell[:surface])
               normalize_route_family(route_family: surface_meta[:route_family]) == family &&
                 post_checkpoints.include?(checkpoint)
             end
@@ -206,13 +206,13 @@ module PWN
               end
 
               direct_denied = actor_cells.any? do |cell|
-                surface = symbolize_obj(surface_lookup[cell[:surface].to_s] || {})
+                surface = surface_lookup_entry(surface_lookup: surface_lookup, surface_id: cell[:surface])
                 normalize_route_family(route_family: surface[:route_family]) == 'direct' &&
                   normalize_token(cell[:status]) == 'denied'
               end
 
               secondary_accessible = actor_cells.any? do |cell|
-                surface = symbolize_obj(surface_lookup[cell[:surface].to_s] || {})
+                surface = surface_lookup_entry(surface_lookup: surface_lookup, surface_id: cell[:surface])
                 normalize_route_family(route_family: surface[:route_family]) == 'secondary' &&
                   normalize_token(cell[:status]) == 'accessible'
               end
@@ -243,7 +243,7 @@ module PWN
             checkpoint = normalize_token(cell[:checkpoint])
             next false unless post_checkpoints.include?(checkpoint)
 
-            surface = symbolize_obj(surface_lookup[cell[:surface].to_s] || {})
+            surface = surface_lookup_entry(surface_lookup: surface_lookup, surface_id: cell[:surface])
             family = normalize_route_family(route_family: surface[:route_family])
             impact = normalize_token(family_impacts[family.to_sym])
             %w[report_blocker confidence_drop].include?(impact)
@@ -273,7 +273,7 @@ module PWN
 
             checkpoint = normalize_token(cell[:checkpoint])
             stage = post_checkpoints.include?(checkpoint) ? 'post_change' : 'pre_change'
-            surface = symbolize_obj(surface_lookup[cell[:surface].to_s] || {})
+            surface = surface_lookup_entry(surface_lookup: surface_lookup, surface_id: cell[:surface])
             family = normalize_route_family(route_family: surface[:route_family])
             impact_level = normalize_token(family_impacts[family.to_sym])
             impact_level = 'nice_to_have' if impact_level.empty?
@@ -302,6 +302,17 @@ module PWN
                 .sort_by { |item| [impact_rank(item[:impact_level]), item[:checkpoint], item[:actor], item[:surface]] }
             }
           }
+        rescue StandardError => e
+          raise e
+        end
+
+        private_class_method def self.surface_lookup_entry(opts = {})
+          surface_lookup = symbolize_obj(opts[:surface_lookup] || {})
+          surface_id = opts[:surface_id].to_s
+
+          surface = surface_lookup[surface_id]
+          surface = surface_lookup[surface_id.to_sym] if surface.nil?
+          symbolize_obj(surface || {})
         rescue StandardError => e
           raise e
         end

@@ -14,6 +14,7 @@ module PWN
       autoload :ArtifactAccessDriftMatrix, 'pwn/bounty/lifecycle_authz_replay/artifact_access_drift_matrix'
       autoload :CaptureAdapters, 'pwn/bounty/lifecycle_authz_replay/capture_adapters'
       autoload :RoutePackCompleteness, 'pwn/bounty/lifecycle_authz_replay/route_pack_completeness'
+      autoload :SubmissionBundle, 'pwn/bounty/lifecycle_authz_replay/submission_bundle'
 
       DEFAULT_CHECKPOINTS = %w[pre_change post_change_t0 post_change_tn].freeze
       STATUS_VALUES = %w[missing accessible denied error unknown].freeze
@@ -657,6 +658,15 @@ module PWN
           route_pack_completeness: route_pack_completeness
         }
 
+        submission_bundle = PWN::Bounty::LifecycleAuthzReplay::SubmissionBundle.evaluate(
+          run_obj: run_obj,
+          summary: summary,
+          output_dir: File.dirname(run_obj[:run_root])
+        )
+        summary[:submission_bundle] = submission_bundle
+        summary[:totals][:submission_ready] = submission_bundle[:ready_to_submit] == true ? 1 : 0
+        summary[:totals][:submission_missing_proof_count] = Array(submission_bundle[:missing_proof]).length
+
         write_json(path: File.join(run_obj[:run_root], 'SUMMARY.json'), obj: summary)
         write_report(run_obj: run_obj, summary: summary)
 
@@ -787,6 +797,11 @@ module PWN
 
             artifact_drift = PWN::Bounty::LifecycleAuthzReplay::ArtifactAccessDriftMatrix.evaluate(
               run_obj: run_obj
+            )
+
+            submission_bundle = PWN::Bounty::LifecycleAuthzReplay::SubmissionBundle.evaluate(
+              run_obj: run_obj,
+              summary: summary
             )
         HELP
       end
@@ -1079,6 +1094,18 @@ module PWN
             lines << "  - direct_denied=`#{family_hash[:direct_denied]}` derived_accessible=`#{family_hash[:derived_accessible]}`"
             lines << "  - surviving_derived_routes=`#{Array(family_hash[:surviving_derived_routes]).join(',')}`"
           end
+        end
+
+        lines << ''
+        lines << '## Submission Bundle'
+        submission_bundle = symbolize_obj(summary[:submission_bundle] || {})
+        lines << "- Decision: `#{submission_bundle[:decision]}`"
+        lines << "- Ready To Submit: `#{submission_bundle[:ready_to_submit]}`"
+
+        if Array(submission_bundle[:missing_proof]).empty?
+          lines << '- Missing Proof: none'
+        else
+          lines << "- Missing Proof: `#{Array(submission_bundle[:missing_proof]).join(', ')}`"
         end
 
         lines << ''

@@ -1,0 +1,58 @@
+generated_at: '2026-04-28T06:58:00Z'
+run_id: acme-revoke-smoke
+ready_to_submit: true
+decision: submit_now
+claim:
+  target: https://example.test/acme/private-repo
+  boundary_change: Direct routes denied after change on 2 captured cell(s).
+  survivor_summary: Surviving post-change access still observed via repo_notification_feed.
+  contradiction_flags: []
+  narrative: After lifecycle authorization change, direct access is removed while alternate surfaces may still expose data/actions.
+evidence_groups:
+  direct_route_denials:
+    count: 2
+    cells:
+      - checkpoint: post_change_t0
+        actor: revoked_user
+        surface: repo_collaborator_api
+        status: denied
+        evidence_path: artifacts/post_change_t0/revoked_user/repo_collaborator_api.json
+  surviving_secondary_or_artifact_access:
+    count: 1
+    groups:
+      - category: mixed_surface
+        checkpoint: post_change_t0
+        actor: revoked_user
+        surfaces:
+          - repo_notification_feed
+        evidence_paths:
+          - artifacts/post_change_t0/revoked_user/repo_notification_feed.json
+impact_bullets:
+  - Revoked actor retained post-change reachability through 1 non-canonical surface group(s).
+  - Stale post-change accessibility remained on 1 captured cell(s).
+repro_skeleton:
+  preconditions:
+    - 'Target: https://example.test/acme/private-repo'
+    - 'Lifecycle event: revoke'
+    - Two actor contexts: control actor and revoked/reduced actor.
+  steps:
+    - Capture pre-change direct route accessibility for revoked actor.
+    - Apply authz boundary change (remove role/membership/capability).
+    - Capture post-change direct route denial for same actor/context.
+    - Probe secondary/artifact/export routes for the same object family.
+    - Persist response status, headers, body hash, and timestamps in one timeline bundle.
+missing_proof: []
+contradictions: []
+cvss_draft:
+  score: 8.6
+  vector: CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:L/A:N
+  confidence: medium
+  rationale: Direct denial with surviving derived access indicates meaningful confidentiality impact.
+cwe_draft:
+  - 'CWE-639: Authorization Bypass Through User-Controlled Key'
+  - 'CWE-284: Improper Access Control'
+nist_800_53_candidate:
+  - AC-2 Account Management
+  - AC-3 Access Enforcement
+  - AC-6 Least Privilege
+  - AU-12 Audit Generation
