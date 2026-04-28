@@ -1,0 +1,39 @@
+run_id: bundle-intel-derived-artifact-surface-atlas-example
+target: https://app.example.test
+base_url: https://app.example.test
+max_chains: 20
+
+route_permission_atlas:
+  entries:
+    - entry_type: route
+      identifier: /api/v1/reports/generate
+      role_hint: admin
+      object_family: report
+      recommended_replay_lane: lifecycle_authz_replay
+      evidence_sources:
+        - source_id: js_1
+          source_type: js_bundle
+
+    - entry_type: route
+      identifier: /api/v1/reports/status
+      role_hint: admin
+      object_family: report
+      recommended_replay_lane: lifecycle_authz_replay
+      evidence_sources:
+        - source_id: js_1
+          source_type: js_bundle
+
+    - entry_type: route
+      identifier: /exports/reports/download
+      role_hint: admin
+      object_family: report
+      recommended_replay_lane: sensitive_file_exposure_pack
+      evidence_sources:
+        - source_id: sm_1
+          source_type: source_map
+
+artifacts:
+  - |
+    const a = '/api/v1/reports/generate';
+    const b = '/api/v1/reports/status';
+    const c = '/exports/reports/download';

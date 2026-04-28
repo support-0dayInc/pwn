@@ -5,6 +5,7 @@ module PWN
     # BundleIntel discovers hidden routes/permissions/operations from static
     # artifacts (HTML, JS bundles, source maps, traffic captures).
     module BundleIntel
+      autoload :DerivedArtifactSurfaceAtlas, 'pwn/bounty/bundle_intel/derived_artifact_surface_atlas'
       autoload :RoutePermissionAtlas, 'pwn/bounty/bundle_intel/route_permission_atlas'
 
       # Display Usage Information
