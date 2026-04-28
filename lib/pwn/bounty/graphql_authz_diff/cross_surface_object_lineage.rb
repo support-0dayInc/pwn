@@ -188,8 +188,7 @@ module PWN
             status = entry[:denied] == true ? 'denied' : status
             status = 'unknown' if status.empty?
 
-            refs = Array(entry[:object_refs] || entry[:refs]).map { |ref| normalize_ref(ref: ref) }.reject(&:empty?)
-            refs << normalize_ref(ref: entry[:object_id]) unless normalize_ref(ref: entry[:object_id]).empty?
+            refs = surface_refs_from_entry(entry: entry)
 
             next if status == 'unknown' && refs.empty?
 
@@ -235,12 +234,14 @@ module PWN
 
         private_class_method def self.cluster_families(opts = {})
           observations = Array(opts[:observations]).map { |entry| symbolize_obj(entry) }
-          seed_lookup = symbolize_obj(opts[:seed_lookup] || {})
+          seed_lookup = opts[:seed_lookup].is_a?(Hash) ? opts[:seed_lookup] : {}
 
           observations.each_with_object(Hash.new { |hash, key| hash[key] = [] }) do |observation, accum|
             refs = Array(observation[:refs]).map { |ref| normalize_ref(ref: ref) }.reject(&:empty?)
 
-            family_keys = refs.map { |ref| seed_lookup[ref] || ref }.uniq
+            family_keys = refs.map do |ref|
+              seed_lookup[ref] || seed_lookup[ref.to_sym] || ref
+            end.uniq
             family_keys = [fallback_family_key(observation: observation)] if family_keys.empty?
 
             family_keys.each do |family_key|
@@ -395,6 +396,53 @@ module PWN
           else
             []
           end
+        rescue StandardError => e
+          raise e
+        end
+
+        private_class_method def self.surface_refs_from_entry(opts = {})
+          entry = symbolize_obj(opts[:entry] || {})
+
+          refs = []
+          refs.concat(Array(entry[:object_refs] || entry[:refs]))
+          refs << entry[:object_id]
+          refs << entry[:node_id]
+          refs << entry[:database_id]
+          refs << entry[:slug]
+          refs << entry[:handle]
+          refs << entry[:attachment_id]
+          refs << entry[:upload_id]
+          refs << entry[:migration_id]
+          refs << entry[:url]
+          refs << entry[:route]
+          refs << entry[:path]
+
+          evidence = parse_evidence_file(evidence_path: entry[:evidence_path])
+          refs.concat(collect_refs_from_obj(obj: evidence))
+
+          url_hint = evidence.dig(:request, :url) || evidence.dig(:request, :path) || evidence.dig(:response, :url)
+          refs << url_hint unless url_hint.to_s.empty?
+
+          refs.concat(extract_refs_from_url(url: entry[:url]))
+          refs.concat(extract_refs_from_url(url: url_hint))
+
+          refs.map { |ref| normalize_ref(ref: ref) }.reject(&:empty?).uniq
+        rescue StandardError => e
+          raise e
+        end
+
+        private_class_method def self.extract_refs_from_url(opts = {})
+          url = opts[:url].to_s
+          return [] if url.empty?
+
+          refs = []
+          object_match = url.match(%r{/(?:objects?|issues?|pulls?|merge_requests?|migrations?|uploads?|attachments?|artifacts?|exports?|comments?|repos?|projects?)/([^/?#]+)}i)
+          refs << object_match[1] unless object_match.nil?
+
+          slug_match = url.match(%r{/([a-z0-9_.-]+/[a-z0-9_.-]+)(?:/|\?|#|$)}i)
+          refs << slug_match[1] unless slug_match.nil?
+
+          refs
         rescue StandardError => e
           raise e
         end

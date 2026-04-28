@@ -1,0 +1,34 @@
+{
+  "generated_at": "2026-04-28T08:58:00Z",
+  "run_id": "graphql-authz-diff-example",
+  "observation_count": 4,
+  "family_count": 1,
+  "reportable_candidate_count": 1,
+  "best_candidate": {
+    "family_key": "gid://github/issue/123",
+    "observation_count": 4,
+    "direct_denied": true,
+    "alternate_accessible": true,
+    "surviving_routes": [
+      "issue_export",
+      "attachment_download"
+    ],
+    "report_angle": "direct_denied_alternate_accessible",
+    "best_next_capture": "Replay one adjacent direct-denied checkpoint and preserve matching alternate-route evidence hash for the same family."
+  },
+  "seed_suggestions": [
+    {
+      "family_key": "gid://github/issue/123",
+      "aliases": [
+        "issue_export",
+        "attachment_download"
+      ],
+      "refs": [
+        "gid://github/issue/123",
+        "mdu6sxnzdwuxmjm=",
+        "123",
+        "acme/private-repo"
+      ]
+    }
+  ]
+}

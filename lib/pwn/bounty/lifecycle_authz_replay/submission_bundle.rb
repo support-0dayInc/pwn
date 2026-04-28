@@ -41,6 +41,9 @@ module PWN
 
           raise 'summary is required' if summary.empty?
 
+          object_family_candidates = Array(opts[:object_family_candidates]).map { |entry| symbolize_obj(entry) }
+          best_object_family_candidate = best_object_family_candidate(candidates: object_family_candidates)
+
           direct_denied_cells = direct_cells_with_status(
             run_obj: run_obj,
             checkpoints: Array(run_obj&.dig(:plan, :expected_denied_after)),
@@ -67,7 +70,8 @@ module PWN
             surviving_access_groups: surviving_access_groups,
             summary: summary,
             contradictions: contradictions,
-            sensitive_payload_observed: sensitive_payload_observed
+            sensitive_payload_observed: sensitive_payload_observed,
+            best_object_family_candidate: best_object_family_candidate
           )
 
           decision = decide(summary: summary, contradictions: contradictions, missing_proof: missing_proof)
@@ -78,26 +82,31 @@ module PWN
             run_id: summary[:run_id].to_s,
             ready_to_submit: ready_to_submit,
             decision: decision,
+            best_object_family_candidate: best_object_family_candidate,
             claim: claim(
               summary: summary,
               direct_denied_cells: direct_denied_cells,
               surviving_access_groups: surviving_access_groups,
-              contradictions: contradictions
+              contradictions: contradictions,
+              best_object_family_candidate: best_object_family_candidate
             ),
             evidence_groups: evidence_groups(
               summary: summary,
               direct_denied_cells: direct_denied_cells,
               direct_accessible_cells: direct_accessible_cells,
-              surviving_access_groups: surviving_access_groups
+              surviving_access_groups: surviving_access_groups,
+              best_object_family_candidate: best_object_family_candidate
             ),
             impact_bullets: impact_bullets(
               summary: summary,
-              surviving_access_groups: surviving_access_groups
+              surviving_access_groups: surviving_access_groups,
+              best_object_family_candidate: best_object_family_candidate
             ),
             repro_skeleton: repro_skeleton(
               summary: summary,
               direct_denied_cells: direct_denied_cells,
-              surviving_access_groups: surviving_access_groups
+              surviving_access_groups: surviving_access_groups,
+              best_object_family_candidate: best_object_family_candidate
             ),
             missing_proof: missing_proof,
             contradictions: contradictions,
@@ -263,16 +272,47 @@ module PWN
           raise e
         end
 
+        private_class_method def self.best_object_family_candidate(opts = {})
+          candidates = Array(opts[:candidates]).map { |entry| symbolize_obj(entry) }
+          return {} if candidates.empty?
+
+          prioritized = candidates.sort_by do |candidate|
+            report_angle = normalize_token(candidate[:report_angle])
+            angle_rank = case report_angle
+                         when 'direct_denied_alternate_accessible', 'cross_surface_authz_drift'
+                           4
+                         when 'alternate_access_without_direct_denial', 'alternate_surface_access_without_direct_gate'
+                           3
+                         when 'direct_denied_only'
+                           2
+                         else
+                           1
+                         end
+            [-angle_rank, -Array(candidate[:surviving_routes]).length, candidate[:family_key].to_s]
+          end
+
+          symbolize_obj(prioritized.first || {})
+        rescue StandardError => e
+          raise e
+        end
+
         private_class_method def self.missing_proof(opts = {})
           direct_denied_cells = Array(opts[:direct_denied_cells]).map { |cell| symbolize_obj(cell) }
           surviving_access_groups = Array(opts[:surviving_access_groups]).map { |group| symbolize_obj(group) }
           summary = symbolize_obj(opts[:summary] || {})
           contradictions = Array(opts[:contradictions]).map { |entry| normalize_token(entry) }
           sensitive_payload_observed = opts[:sensitive_payload_observed] == true
+          best_object_family_candidate = symbolize_obj(opts[:best_object_family_candidate] || {})
 
           missing = []
           missing << 'direct_route_denial_proof' if direct_denied_cells.empty?
-          missing << 'post_change_surviving_access_proof' if surviving_access_groups.empty?
+
+          has_cross_surface_candidate = %w[
+            direct_denied_alternate_accessible
+            cross_surface_authz_drift
+          ].include?(normalize_token(best_object_family_candidate[:report_angle]))
+
+          missing << 'post_change_surviving_access_proof' if surviving_access_groups.empty? && !has_cross_surface_candidate
 
           route_pack = symbolize_obj(summary[:route_pack_completeness] || {})
           missing << 'route_pack_report_blockers' if route_pack[:report_blocker_count].to_i.positive?
@@ -307,6 +347,7 @@ module PWN
           direct_denied_cells = Array(opts[:direct_denied_cells]).map { |cell| symbolize_obj(cell) }
           surviving_access_groups = Array(opts[:surviving_access_groups]).map { |group| symbolize_obj(group) }
           contradictions = Array(opts[:contradictions]).map { |entry| normalize_token(entry) }
+          best_object_family_candidate = symbolize_obj(opts[:best_object_family_candidate] || {})
 
           campaign = symbolize_obj(summary[:campaign] || {})
           target = campaign[:target].to_s
@@ -325,10 +366,21 @@ module PWN
                                "Surviving post-change access still observed via #{surfaces.first(5).join(', ')}#{surfaces.length > 5 ? ', ...' : ''}."
                              end
 
+          object_family_candidate = if best_object_family_candidate.empty?
+                                      nil
+                                    else
+                                      {
+                                        family_key: best_object_family_candidate[:family_key],
+                                        report_angle: best_object_family_candidate[:report_angle],
+                                        surviving_routes: Array(best_object_family_candidate[:surviving_routes])
+                                      }
+                                    end
+
           {
             target: target,
             boundary_change: boundary_change,
             survivor_summary: survivor_summary,
+            object_family_candidate: object_family_candidate,
             contradiction_flags: contradictions,
             narrative: "After lifecycle authorization change, direct access is removed while alternate surfaces may still expose data/actions."
           }
@@ -341,6 +393,7 @@ module PWN
           direct_denied_cells = Array(opts[:direct_denied_cells]).map { |cell| symbolize_obj(cell) }
           direct_accessible_cells = Array(opts[:direct_accessible_cells]).map { |cell| symbolize_obj(cell) }
           surviving_access_groups = Array(opts[:surviving_access_groups]).map { |group| symbolize_obj(group) }
+          best_object_family_candidate = symbolize_obj(opts[:best_object_family_candidate] || {})
 
           {
             direct_route_denials: {
@@ -355,6 +408,13 @@ module PWN
               count: surviving_access_groups.length,
               groups: surviving_access_groups
             },
+            cross_surface_object_family: {
+              present: !best_object_family_candidate.empty?,
+              family_key: best_object_family_candidate[:family_key],
+              report_angle: best_object_family_candidate[:report_angle],
+              surviving_routes: Array(best_object_family_candidate[:surviving_routes]),
+              best_next_capture: best_object_family_candidate[:best_next_capture]
+            },
             route_pack_gaps: {
               report_blockers: summary.dig(:route_pack_completeness, :report_blocker_count).to_i,
               confidence_drops: summary.dig(:route_pack_completeness, :confidence_drop_count).to_i,
@@ -368,10 +428,15 @@ module PWN
         private_class_method def self.impact_bullets(opts = {})
           summary = symbolize_obj(opts[:summary] || {})
           surviving_access_groups = Array(opts[:surviving_access_groups]).map { |group| symbolize_obj(group) }
+          best_object_family_candidate = symbolize_obj(opts[:best_object_family_candidate] || {})
           bullets = []
 
           unless surviving_access_groups.empty?
             bullets << "Revoked actor retained post-change reachability through #{surviving_access_groups.length} non-canonical surface group(s)."
+          end
+
+          unless best_object_family_candidate.empty?
+            bullets << "Object-family candidate #{best_object_family_candidate[:family_key]} is ranked #{best_object_family_candidate[:report_angle]} across #{Array(best_object_family_candidate[:surviving_routes]).length} surviving route(s)."
           end
 
           artifact_findings = summary.dig(:artifact_access_drift, :reportable_candidate_count).to_i
@@ -395,6 +460,7 @@ module PWN
           summary = symbolize_obj(opts[:summary] || {})
           direct_denied_cells = Array(opts[:direct_denied_cells]).map { |cell| symbolize_obj(cell) }
           surviving_access_groups = Array(opts[:surviving_access_groups]).map { |group| symbolize_obj(group) }
+          best_object_family_candidate = symbolize_obj(opts[:best_object_family_candidate] || {})
 
           campaign = symbolize_obj(summary[:campaign] || {})
 
@@ -414,6 +480,7 @@ module PWN
             expected: [
               "Direct denied captures: #{direct_denied_cells.length}",
               "Surviving access groups: #{surviving_access_groups.length}",
+              "Object-family candidate: #{best_object_family_candidate[:family_key] || 'none'}",
               "Route completeness score: #{summary.dig(:route_pack_completeness, :completion_score)}"
             ],
             artifacts: [
@@ -561,6 +628,10 @@ module PWN
           claim = symbolize_obj(bundle[:claim] || {})
           lines << "- boundary_change: #{claim[:boundary_change]}"
           lines << "- survivor_summary: #{claim[:survivor_summary]}"
+          unless symbolize_obj(claim[:object_family_candidate] || {}).empty?
+            candidate = symbolize_obj(claim[:object_family_candidate])
+            lines << "- object_family_candidate: #{candidate[:family_key]} (#{candidate[:report_angle]})"
+          end
           lines << "- narrative: #{claim[:narrative]}"
 
           lines << ''

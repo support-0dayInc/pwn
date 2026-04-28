@@ -10,6 +10,7 @@ module PWN
     # capture adapters and emits report-ready diff artifacts.
     module GraphQLAuthzDiff
       autoload :CrossSurfaceObjectLineage, 'pwn/bounty/graphql_authz_diff/cross_surface_object_lineage'
+      autoload :OpaqueHandleAtlas, 'pwn/bounty/graphql_authz_diff/opaque_handle_atlas'
 
       DEFAULT_CHECKPOINTS = ['pre_change'].freeze
 
@@ -89,15 +90,34 @@ module PWN
           findings: analysis[:findings]
         }
 
-        cross_surface_lineage = PWN::Bounty::GraphQLAuthzDiff::CrossSurfaceObjectLineage.run(
+        opaque_handle_atlas = PWN::Bounty::GraphQLAuthzDiff::OpaqueHandleAtlas.run(
           diff_report: diff_report,
           surface_evidence: opts[:surface_evidence],
           object_seeds: opts[:object_seeds],
           output_dir: run_obj[:run_root]
         )
+        diff_report[:opaque_handle_atlas] = opaque_handle_atlas
+        diff_report[:opaque_handle_family_count] = opaque_handle_atlas[:family_count]
+        diff_report[:opaque_handle_reportable_count] = opaque_handle_atlas[:reportable_candidate_count]
+
+        cross_surface_lineage = PWN::Bounty::GraphQLAuthzDiff::CrossSurfaceObjectLineage.run(
+          diff_report: diff_report,
+          surface_evidence: opts[:surface_evidence],
+          object_seeds: merged_object_seeds(
+            object_seeds: opts[:object_seeds],
+            opaque_handle_atlas: opaque_handle_atlas
+          ),
+          output_dir: run_obj[:run_root]
+        )
         diff_report[:cross_surface_object_lineage] = cross_surface_lineage
         diff_report[:cross_surface_family_count] = cross_surface_lineage[:family_count]
         diff_report[:cross_surface_reportable_count] = cross_surface_lineage[:reportable_candidate_count]
+
+        lifecycle_summary[:submission_bundle] = PWN::Bounty::LifecycleAuthzReplay::SubmissionBundle.evaluate(
+          run_obj: run_obj,
+          summary: lifecycle_summary,
+          object_family_candidates: [opaque_handle_atlas[:best_candidate]].compact
+        )
 
         write_json(
           path: File.join(run_obj[:run_root], 'graphql_authz_diff.json'),
@@ -217,6 +237,13 @@ module PWN
               actors: [...],
               operations: [...],
               checkpoints: ['pre_change']
+            )
+
+            atlas = PWN::Bounty::GraphQLAuthzDiff::OpaqueHandleAtlas.run(
+              diff_report: diff_report,
+              surface_evidence: '/tmp/surface_evidence.json',
+              object_seeds: '/tmp/object_seeds.json',
+              output_dir: '/tmp/graphql-authz-diff'
             )
 
             lineage = PWN::Bounty::GraphQLAuthzDiff::CrossSurfaceObjectLineage.run(
@@ -464,6 +491,19 @@ module PWN
         raise e
       end
 
+      private_class_method def self.merged_object_seeds(opts = {})
+        object_seeds = Array(opts[:object_seeds]).map { |seed| symbolize_obj(seed) }
+        opaque_handle_atlas = symbolize_obj(opts[:opaque_handle_atlas] || {})
+        seed_suggestions = Array(opaque_handle_atlas[:seed_suggestions]).map { |seed| symbolize_obj(seed) }
+
+        merged = object_seeds + seed_suggestions
+        merged.uniq do |seed|
+          normalize_token(seed[:family_key] || seed[:id] || seed[:node_id] || seed[:slug] || seed[:url])
+        end
+      rescue StandardError => e
+        raise e
+      end
+
       private_class_method def self.expected_access_for(opts = {})
         actor = symbolize_obj(opts[:actor] || {})
         operation = symbolize_obj(opts[:operation] || {})
@@ -555,6 +595,22 @@ module PWN
             lines << "  - evidence: `#{finding_hash[:evidence_path]}`"
           end
         end
+
+        lines << ''
+        lines << '## Opaque Handle Atlas'
+        atlas = symbolize_obj(report[:opaque_handle_atlas] || {})
+        lines << "- Families: `#{atlas[:family_count] || 0}`"
+        lines << "- Reportable Candidates: `#{atlas[:reportable_candidate_count] || 0}`"
+        best_candidate = symbolize_obj(atlas[:best_candidate] || {})
+        unless best_candidate.empty?
+          lines << "- Best Candidate: `#{best_candidate[:family_key]}` angle=`#{best_candidate[:report_angle]}`"
+        end
+
+        lines << ''
+        lines << '## Cross-Surface Lineage'
+        lineage = symbolize_obj(report[:cross_surface_object_lineage] || {})
+        lines << "- Families: `#{lineage[:family_count] || 0}`"
+        lines << "- Reportable Candidates: `#{lineage[:reportable_candidate_count] || 0}`"
 
         lines << ''
         lines << '## Matrix'
