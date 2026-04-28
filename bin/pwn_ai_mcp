@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+$stdout.sync = true
+$LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+
+require 'pwn'
+
+begin
+  PWN::AI::MCP::Server.run!
+rescue Interrupt
+  exit 0
+end

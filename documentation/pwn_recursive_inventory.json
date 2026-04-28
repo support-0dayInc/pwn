@@ -1,0 +1,2987 @@
+{
+  "root": "PWN",
+  "generated_at": "2026-04-28T01:15:56Z",
+  "constants_count": 162,
+  "load_error_count": 150,
+  "load_errors": [
+    {
+      "name": "Grok",
+      "path": "PWN::AI::Grok",
+      "type": "unknown",
+      "error": "cannot load such file -- rest-client"
+    },
+    {
+      "name": "Introspection",
+      "path": "PWN::AI::Introspection",
+      "type": "unknown",
+      "error": "cannot load such file -- rest-client"
+    },
+    {
+      "name": "Ollama",
+      "path": "PWN::AI::Ollama",
+      "type": "unknown",
+      "error": "cannot load such file -- tty-spinner"
+    },
+    {
+      "name": "OpenAI",
+      "path": "PWN::AI::OpenAI",
+      "type": "unknown",
+      "error": "cannot load such file -- tty-spinner"
+    },
+    {
+      "name": "ACM",
+      "path": "PWN::AWS::ACM",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "APIGateway",
+      "path": "PWN::AWS::APIGateway",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "AppStream",
+      "path": "PWN::AWS::AppStream",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "ApplicationAutoScaling",
+      "path": "PWN::AWS::ApplicationAutoScaling",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "ApplicationDiscoveryService",
+      "path": "PWN::AWS::ApplicationDiscoveryService",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "AutoScaling",
+      "path": "PWN::AWS::AutoScaling",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Batch",
+      "path": "PWN::AWS::Batch",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Budgets",
+      "path": "PWN::AWS::Budgets",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "CloudFormation",
+      "path": "PWN::AWS::CloudFormation",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "CloudFront",
+      "path": "PWN::AWS::CloudFront",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "CloudHSM",
+      "path": "PWN::AWS::CloudHSM",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "CloudSearch",
+      "path": "PWN::AWS::CloudSearch",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "CloudSearchDomain",
+      "path": "PWN::AWS::CloudSearchDomain",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "CloudTrail",
+      "path": "PWN::AWS::CloudTrail",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "CloudWatch",
+      "path": "PWN::AWS::CloudWatch",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "CloudWatchEvents",
+      "path": "PWN::AWS::CloudWatchEvents",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "CloudWatchLogs",
+      "path": "PWN::AWS::CloudWatchLogs",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "CodeBuild",
+      "path": "PWN::AWS::CodeBuild",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "CodeCommit",
+      "path": "PWN::AWS::CodeCommit",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "CodeDeploy",
+      "path": "PWN::AWS::CodeDeploy",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "CodePipeline",
+      "path": "PWN::AWS::CodePipeline",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "CognitoIdentity",
+      "path": "PWN::AWS::CognitoIdentity",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "CognitoIdentityProvider",
+      "path": "PWN::AWS::CognitoIdentityProvider",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "CognitoSync",
+      "path": "PWN::AWS::CognitoSync",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "ConfigService",
+      "path": "PWN::AWS::ConfigService",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "DataPipeline",
+      "path": "PWN::AWS::DataPipeline",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "DatabaseMigrationService",
+      "path": "PWN::AWS::DatabaseMigrationService",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "DeviceFarm",
+      "path": "PWN::AWS::DeviceFarm",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "DirectConnect",
+      "path": "PWN::AWS::DirectConnect",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "DirectoryService",
+      "path": "PWN::AWS::DirectoryService",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "DynamoDB",
+      "path": "PWN::AWS::DynamoDB",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "DynamoDBStreams",
+      "path": "PWN::AWS::DynamoDBStreams",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "EC2",
+      "path": "PWN::AWS::EC2",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "ECR",
+      "path": "PWN::AWS::ECR",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "ECS",
+      "path": "PWN::AWS::ECS",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "EFS",
+      "path": "PWN::AWS::EFS",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "EMR",
+      "path": "PWN::AWS::EMR",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "ElastiCache",
+      "path": "PWN::AWS::ElastiCache",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "ElasticBeanstalk",
+      "path": "PWN::AWS::ElasticBeanstalk",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "ElasticLoadBalancing",
+      "path": "PWN::AWS::ElasticLoadBalancing",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "ElasticLoadBalancingV2",
+      "path": "PWN::AWS::ElasticLoadBalancingV2",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "ElasticTranscoder",
+      "path": "PWN::AWS::ElasticTranscoder",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "ElasticsearchService",
+      "path": "PWN::AWS::ElasticsearchService",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Firehose",
+      "path": "PWN::AWS::Firehose",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "GameLift",
+      "path": "PWN::AWS::GameLift",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Glacier",
+      "path": "PWN::AWS::Glacier",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Health",
+      "path": "PWN::AWS::Health",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "IAM",
+      "path": "PWN::AWS::IAM",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "ImportExport",
+      "path": "PWN::AWS::ImportExport",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Inspector",
+      "path": "PWN::AWS::Inspector",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "IoT",
+      "path": "PWN::AWS::IoT",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "IoTDataPlane",
+      "path": "PWN::AWS::IoTDataPlane",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "KMS",
+      "path": "PWN::AWS::KMS",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Kinesis",
+      "path": "PWN::AWS::Kinesis",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "KinesisAnalytics",
+      "path": "PWN::AWS::KinesisAnalytics",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Lambda",
+      "path": "PWN::AWS::Lambda",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "LambdaPreview",
+      "path": "PWN::AWS::LambdaPreview",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Lex",
+      "path": "PWN::AWS::Lex",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Lightsail",
+      "path": "PWN::AWS::Lightsail",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "MachineLearning",
+      "path": "PWN::AWS::MachineLearning",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "MarketplaceCommerceAnalytics",
+      "path": "PWN::AWS::MarketplaceCommerceAnalytics",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "MarketplaceMetering",
+      "path": "PWN::AWS::MarketplaceMetering",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "OpsWorks",
+      "path": "PWN::AWS::OpsWorks",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "OpsWorksCM",
+      "path": "PWN::AWS::OpsWorksCM",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Pinpoint",
+      "path": "PWN::AWS::Pinpoint",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Polly",
+      "path": "PWN::AWS::Polly",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "RDS",
+      "path": "PWN::AWS::RDS",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Redshift",
+      "path": "PWN::AWS::Redshift",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Rekognition",
+      "path": "PWN::AWS::Rekognition",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Route53",
+      "path": "PWN::AWS::Route53",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Route53Domains",
+      "path": "PWN::AWS::Route53Domains",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "S3",
+      "path": "PWN::AWS::S3",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "SES",
+      "path": "PWN::AWS::SES",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "SMS",
+      "path": "PWN::AWS::SMS",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "SNS",
+      "path": "PWN::AWS::SNS",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "SQS",
+      "path": "PWN::AWS::SQS",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "SSM",
+      "path": "PWN::AWS::SSM",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "STS",
+      "path": "PWN::AWS::STS",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "SWF",
+      "path": "PWN::AWS::SWF",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "ServiceCatalog",
+      "path": "PWN::AWS::ServiceCatalog",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Shield",
+      "path": "PWN::AWS::Shield",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "SimpleDB",
+      "path": "PWN::AWS::SimpleDB",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Snowball",
+      "path": "PWN::AWS::Snowball",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "States",
+      "path": "PWN::AWS::States",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "StorageGateway",
+      "path": "PWN::AWS::StorageGateway",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Support",
+      "path": "PWN::AWS::Support",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "WAF",
+      "path": "PWN::AWS::WAF",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "WAFRegional",
+      "path": "PWN::AWS::WAFRegional",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Workspaces",
+      "path": "PWN::AWS::Workspaces",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "XRay",
+      "path": "PWN::AWS::XRay",
+      "type": "unknown",
+      "error": "cannot load such file -- aws-sdk"
+    },
+    {
+      "name": "Anon",
+      "path": "PWN::Banner::Anon",
+      "type": "unknown",
+      "error": "cannot load such file -- colorize"
+    },
+    {
+      "name": "Bubble",
+      "path": "PWN::Banner::Bubble",
+      "type": "unknown",
+      "error": "cannot load such file -- colorize"
+    },
+    {
+      "name": "Cheshire",
+      "path": "PWN::Banner::Cheshire",
+      "type": "unknown",
+      "error": "cannot load such file -- colorize"
+    },
+    {
+      "name": "CodeCave",
+      "path": "PWN::Banner::CodeCave",
+      "type": "unknown",
+      "error": "cannot load such file -- colorize"
+    },
+    {
+      "name": "DontPanic",
+      "path": "PWN::Banner::DontPanic",
+      "type": "unknown",
+      "error": "cannot load such file -- colorize"
+    },
+    {
+      "name": "FSociety",
+      "path": "PWN::Banner::FSociety",
+      "type": "unknown",
+      "error": "cannot load such file -- colorize"
+    },
+    {
+      "name": "ForkBomb",
+      "path": "PWN::Banner::ForkBomb",
+      "type": "unknown",
+      "error": "cannot load such file -- colorize"
+    },
+    {
+      "name": "JmpEsp",
+      "path": "PWN::Banner::JmpEsp",
+      "type": "unknown",
+      "error": "cannot load such file -- colorize"
+    },
+    {
+      "name": "Matrix",
+      "path": "PWN::Banner::Matrix",
+      "type": "unknown",
+      "error": "cannot load such file -- colorize"
+    },
+    {
+      "name": "Ninja",
+      "path": "PWN::Banner::Ninja",
+      "type": "unknown",
+      "error": "cannot load such file -- colorize"
+    },
+    {
+      "name": "OffTheAir",
+      "path": "PWN::Banner::OffTheAir",
+      "type": "unknown",
+      "error": "cannot load such file -- colorize"
+    },
+    {
+      "name": "Pirate",
+      "path": "PWN::Banner::Pirate",
+      "type": "unknown",
+      "error": "cannot load such file -- colorize"
+    },
+    {
+      "name": "Radare2",
+      "path": "PWN::Banner::Radare2",
+      "type": "unknown",
+      "error": "cannot load such file -- colorize"
+    },
+    {
+      "name": "Radare2AI",
+      "path": "PWN::Banner::Radare2AI",
+      "type": "unknown",
+      "error": "cannot load such file -- colorize"
+    },
+    {
+      "name": "WhiteRabbit",
+      "path": "PWN::Banner::WhiteRabbit",
+      "type": "unknown",
+      "error": "cannot load such file -- colorize"
+    },
+    {
+      "name": "BTC",
+      "path": "PWN::Blockchain::BTC",
+      "type": "unknown",
+      "error": "cannot load such file -- rest-client"
+    },
+    {
+      "name": "ETH",
+      "path": "PWN::Blockchain::ETH",
+      "type": "unknown",
+      "error": "cannot load such file -- rest-client"
+    },
+    {
+      "name": "Stdio",
+      "path": "PWN::FFI::Stdio",
+      "type": "unknown",
+      "error": "cannot load such file -- ffi"
+    },
+    {
+      "name": "Assembly",
+      "path": "PWN::Plugins::Assembly",
+      "type": "unknown",
+      "error": "cannot load such file -- metasm"
+    },
+    {
+      "name": "AuthenticationHelper",
+      "path": "PWN::Plugins::AuthenticationHelper",
+      "type": "unknown",
+      "error": "cannot load such file -- tty-prompt"
+    },
+    {
+      "name": "BareSIP",
+      "path": "PWN::Plugins::BareSIP",
+      "type": "unknown",
+      "error": "cannot load such file -- htmlentities"
+    },
+    {
+      "name": "BlackDuckBinaryAnalysis",
+      "path": "PWN::Plugins::BlackDuckBinaryAnalysis",
+      "type": "unknown",
+      "error": "cannot load such file -- tty-spinner"
+    },
+    {
+      "name": "Char",
+      "path": "PWN::Plugins::Char",
+      "type": "unknown",
+      "error": "cannot load such file -- htmlentities"
+    },
+    {
+      "name": "CreditCard",
+      "path": "PWN::Plugins::CreditCard",
+      "type": "unknown",
+      "error": "cannot load such file -- credit_card_validations"
+    },
+    {
+      "name": "DAOLDAP",
+      "path": "PWN::Plugins::DAOLDAP",
+      "type": "unknown",
+      "error": "cannot load such file -- net/ldap"
+    },
+    {
+      "name": "DAOPostgres",
+      "path": "PWN::Plugins::DAOPostgres",
+      "type": "unknown",
+      "error": "cannot load such file -- pg"
+    },
+    {
+      "name": "DAOSQLite3",
+      "path": "PWN::Plugins::DAOSQLite3",
+      "type": "unknown",
+      "error": "cannot load such file -- sqlite3"
+    },
+    {
+      "name": "DetectOS",
+      "path": "PWN::Plugins::DetectOS",
+      "type": "unknown",
+      "error": "cannot load such file -- os"
+    },
+    {
+      "name": "Fuzz",
+      "path": "PWN::Plugins::Fuzz",
+      "type": "unknown",
+      "error": "cannot load such file -- htmlentities"
+    },
+    {
+      "name": "IPInfo",
+      "path": "PWN::Plugins::IPInfo",
+      "type": "unknown",
+      "error": "cannot load such file -- ipaddress"
+    },
+    {
+      "name": "JSONPathify",
+      "path": "PWN::Plugins::JSONPathify",
+      "type": "unknown",
+      "error": "cannot load such file -- jsonpath"
+    },
+    {
+      "name": "Jenkins",
+      "path": "PWN::Plugins::Jenkins",
+      "type": "unknown",
+      "error": "cannot load such file -- jenkins_api_client2"
+    },
+    {
+      "name": "JiraDataCenter",
+      "path": "PWN::Plugins::JiraDataCenter",
+      "type": "unknown",
+      "error": "cannot load such file -- tty-spinner"
+    },
+    {
+      "name": "Metasploit",
+      "path": "PWN::Plugins::Metasploit",
+      "type": "unknown",
+      "error": "cannot load such file -- msfrpc-client"
+    },
+    {
+      "name": "NexposeVulnScan",
+      "path": "PWN::Plugins::NexposeVulnScan",
+      "type": "unknown",
+      "error": "cannot load such file -- nexpose"
+    },
+    {
+      "name": "NmapIt",
+      "path": "PWN::Plugins::NmapIt",
+      "type": "unknown",
+      "error": "cannot load such file -- nmap/command"
+    },
+    {
+      "name": "OCR",
+      "path": "PWN::Plugins::OCR",
+      "type": "unknown",
+      "error": "cannot load such file -- rtesseract"
+    },
+    {
+      "name": "OpenAPI",
+      "path": "PWN::Plugins::OpenAPI",
+      "type": "unknown",
+      "error": "cannot load such file -- json_schemer"
+    },
+    {
+      "name": "OpenVAS",
+      "path": "PWN::Plugins::OpenVAS",
+      "type": "unknown",
+      "error": "cannot load such file -- nokogiri"
+    },
+    {
+      "name": "PDFParse",
+      "path": "PWN::Plugins::PDFParse",
+      "type": "unknown",
+      "error": "cannot load such file -- pdf-reader"
+    },
+    {
+      "name": "Packet",
+      "path": "PWN::Plugins::Packet",
+      "type": "unknown",
+      "error": "cannot load such file -- packetfu"
+    },
+    {
+      "name": "Pony",
+      "path": "PWN::Plugins::Pony",
+      "type": "unknown",
+      "error": "cannot load such file -- mail"
+    },
+    {
+      "name": "REPL",
+      "path": "PWN::Plugins::REPL",
+      "type": "unknown",
+      "error": "cannot load such file -- curses"
+    },
+    {
+      "name": "RabbitMQ",
+      "path": "PWN::Plugins::RabbitMQ",
+      "type": "unknown",
+      "error": "cannot load such file -- bunny"
+    },
+    {
+      "name": "ScannableCodes",
+      "path": "PWN::Plugins::ScannableCodes",
+      "type": "unknown",
+      "error": "cannot load such file -- barby"
+    },
+    {
+      "name": "Serial",
+      "path": "PWN::Plugins::Serial",
+      "type": "unknown",
+      "error": "cannot load such file -- uart"
+    },
+    {
+      "name": "SlackClient",
+      "path": "PWN::Plugins::SlackClient",
+      "type": "unknown",
+      "error": "cannot load such file -- slack-ruby-client"
+    },
+    {
+      "name": "Spider",
+      "path": "PWN::Plugins::Spider",
+      "type": "unknown",
+      "error": "cannot load such file -- anemone"
+    },
+    {
+      "name": "ThreadPool",
+      "path": "PWN::Plugins::ThreadPool",
+      "type": "unknown",
+      "error": "cannot load such file -- concurrent-ruby"
+    },
+    {
+      "name": "Tor",
+      "path": "PWN::Plugins::Tor",
+      "type": "unknown",
+      "error": "cannot load such file -- netaddr"
+    },
+    {
+      "name": "TransparentBrowser",
+      "path": "PWN::Plugins::TransparentBrowser",
+      "type": "unknown",
+      "error": "cannot load such file -- diffy"
+    },
+    {
+      "name": "Vsphere",
+      "path": "PWN::Plugins::Vsphere",
+      "type": "unknown",
+      "error": "cannot load such file -- rbvmomi"
+    },
+    {
+      "name": "Flex",
+      "path": "PWN::SDR::Decoder::Flex",
+      "type": "unknown",
+      "error": "cannot load such file -- tty-spinner"
+    },
+    {
+      "name": "POCSAG",
+      "path": "PWN::SDR::Decoder::POCSAG",
+      "type": "unknown",
+      "error": "cannot load such file -- tty-spinner"
+    },
+    {
+      "name": "RDS",
+      "path": "PWN::SDR::Decoder::RDS",
+      "type": "unknown",
+      "error": "cannot load such file -- tty-spinner"
+    },
+    {
+      "name": "Checkip",
+      "path": "PWN::WWW::Checkip",
+      "type": "unknown",
+      "error": "cannot load such file -- ipaddress"
+    }
+  ],
+  "inventory": [
+    {
+      "path": "PWN",
+      "depth": 0,
+      "type": "module",
+      "singleton_methods": [
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::AI",
+      "depth": 1,
+      "type": "module",
+      "singleton_methods": [
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::AI::Agent",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::AI::Agent::Assembly",
+      "depth": 3,
+      "type": "module",
+      "singleton_methods": [
+        "analyze",
+        "authors",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::AI::Agent::BTC",
+      "depth": 3,
+      "type": "module",
+      "singleton_methods": [
+        "analyze",
+        "authors",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::AI::Agent::BurpSuite",
+      "depth": 3,
+      "type": "module",
+      "singleton_methods": [
+        "analyze",
+        "authors",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::AI::Agent::GQRX",
+      "depth": 3,
+      "type": "module",
+      "singleton_methods": [
+        "analyze",
+        "authors",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::AI::Agent::HackerOne",
+      "depth": 3,
+      "type": "module",
+      "singleton_methods": [
+        "analyze",
+        "authors",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::AI::Agent::SAST",
+      "depth": 3,
+      "type": "module",
+      "singleton_methods": [
+        "analyze",
+        "authors",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::AI::Agent::TransparentBrowser",
+      "depth": 3,
+      "type": "module",
+      "singleton_methods": [
+        "analyze",
+        "authors",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::AI::Agent::VulnGen",
+      "depth": 3,
+      "type": "module",
+      "singleton_methods": [
+        "analyze",
+        "authors",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::AI::MCP",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::AI::MCP::Introspection",
+      "depth": 3,
+      "type": "module",
+      "singleton_methods": [
+        "constant_children",
+        "constantize",
+        "instance_methods_for",
+        "method_inventory",
+        "recursive_inventory",
+        "singleton_methods_for"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::AI::MCP::Policy",
+      "depth": 3,
+      "type": "module",
+      "singleton_methods": [
+        "invocation_allowed?",
+        "method_safety"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::AI::MCP::Registry",
+      "depth": 3,
+      "type": "module",
+      "singleton_methods": [
+        "call_tool",
+        "invoke",
+        "list_tools",
+        "symbolize_hash"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::AI::MCP::Server",
+      "depth": 3,
+      "type": "module",
+      "singleton_methods": [
+        "deep_json_safe",
+        "error_response",
+        "handle_request",
+        "read_message",
+        "run!",
+        "success_response",
+        "write_message"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::AWS",
+      "depth": 1,
+      "type": "module",
+      "singleton_methods": [
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Banner",
+      "depth": 1,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "get",
+        "help",
+        "welcome"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Blockchain",
+      "depth": 1,
+      "type": "module",
+      "singleton_methods": [
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Bounty",
+      "depth": 1,
+      "type": "module",
+      "singleton_methods": [
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Bounty::GraphQLAuthzDiff",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "build_plan",
+        "help",
+        "run_diff"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Bounty::GraphQLAuthzDiff::CrossSurfaceObjectLineage",
+      "depth": 3,
+      "type": "module",
+      "singleton_methods": [
+        "analyze",
+        "authors",
+        "help",
+        "run"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Bounty::LifecycleAuthzReplay",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "build_transition_plan",
+        "execute_capture_cell",
+        "execute_capture_matrix",
+        "finalize_run",
+        "help",
+        "load_plan",
+        "normalize_plan",
+        "record_observation",
+        "route_pack",
+        "start_run",
+        "start_transition_run",
+        "transition_timeline"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Bounty::LifecycleAuthzReplay::CaptureAdapters",
+      "depth": 3,
+      "type": "module",
+      "singleton_methods": [
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Bounty::LifecycleAuthzReplay::CaptureAdapters::Base",
+      "depth": 4,
+      "type": "module",
+      "singleton_methods": [],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Bounty::LifecycleAuthzReplay::CaptureAdapters::Browser",
+      "depth": 4,
+      "type": "module",
+      "singleton_methods": [
+        "capture"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Bounty::LifecycleAuthzReplay::CaptureAdapters::GraphQL",
+      "depth": 4,
+      "type": "module",
+      "singleton_methods": [
+        "capture"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Bounty::LifecycleAuthzReplay::CaptureAdapters::HTTP",
+      "depth": 4,
+      "type": "module",
+      "singleton_methods": [
+        "capture"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Bounty::LifecycleAuthzReplay::RoutePackCompleteness",
+      "depth": 3,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "evaluate",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Bounty::ScopeIntel",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "compile",
+        "diff_rows",
+        "filter_rows",
+        "help",
+        "search_rows"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Config",
+      "depth": 1,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "default_env",
+        "help",
+        "init_driver_options",
+        "redact_sensitive_artifacts",
+        "refresh_env"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Driver",
+      "depth": 1,
+      "type": "class",
+      "singleton_methods": [
+        "authors",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Driver::Parser",
+      "depth": 2,
+      "type": "class",
+      "singleton_methods": [],
+      "instance_methods": [
+        "auto_opts_help",
+        "auto_opts_help=",
+        "opts",
+        "opts=",
+        "parse!"
+      ]
+    },
+    {
+      "path": "PWN::FFI",
+      "depth": 1,
+      "type": "module",
+      "singleton_methods": [
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::HTTP",
+      "depth": 1,
+      "type": "module",
+      "singleton_methods": [
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::HTTP::SSRFChain",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "analyze_observations",
+        "authors",
+        "build_probe_plan",
+        "help",
+        "load_profile",
+        "profile_cloud_impact",
+        "run"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::HTTP::SSRFChain::CloudImpactProfiler",
+      "depth": 3,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "profile"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins",
+      "depth": 1,
+      "type": "module",
+      "singleton_methods": [
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::Android",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "adb_net_connect",
+        "adb_net_disconnect",
+        "adb_pull",
+        "adb_push",
+        "adb_sh",
+        "authors",
+        "close_app",
+        "dumpsys",
+        "find_hidden_codes",
+        "help",
+        "input",
+        "input_special",
+        "invoke_event_listener",
+        "list_installed_apps",
+        "open_app",
+        "screen_record",
+        "swipe",
+        "take_screenshot"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::BasicAuth",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "decode",
+        "encode",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::BeEF",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "hooked_browser_info",
+        "hooked_browser_logs",
+        "hooks",
+        "login",
+        "logout",
+        "logs",
+        "module_info",
+        "modules"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::BurpSuite",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "active_scan",
+        "add_proxy_listener",
+        "add_repeater_tab",
+        "add_to_scope",
+        "add_to_sitemap",
+        "authors",
+        "delete_proxy_listener",
+        "delete_repeater_tab",
+        "disable_proxy",
+        "enable_proxy",
+        "generate_scan_report",
+        "get_all_repeater_tabs",
+        "get_proxy_history",
+        "get_proxy_listeners",
+        "get_repeater_tab",
+        "get_scan_issues",
+        "get_sitemap",
+        "get_websocket_history",
+        "help",
+        "import_openapi_to_sitemap",
+        "in_scope",
+        "send_repeater_request",
+        "spider",
+        "start",
+        "stop",
+        "update_burp_jar",
+        "update_proxy_history",
+        "update_proxy_listener",
+        "update_repeater_tab",
+        "update_sitemap",
+        "update_websocket_history"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::BusPirate",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "connect",
+        "connect_via_screen",
+        "disconnect",
+        "help",
+        "init_mode"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::DAOMongo",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "connect",
+        "disconnect",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::DefectDojo",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "engagement_create",
+        "engagement_list",
+        "finding_list",
+        "help",
+        "importscan",
+        "login",
+        "logout",
+        "product_list",
+        "reimportscan",
+        "test_list",
+        "tool_configuration_list",
+        "user_list"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::EIN",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "generate",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::FileFu",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "recurse_in_dir",
+        "shift_file_up",
+        "untar_gz_file"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::Git",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "dump_all_repo_branches",
+        "gen_html_diff",
+        "get_author",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::Github",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "download_all_gists",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::HackerOne",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "login",
+        "logout"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::Hunter",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "search"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::IRC",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "connect",
+        "disconnect",
+        "help",
+        "join",
+        "listen",
+        "names",
+        "part",
+        "ping",
+        "pong",
+        "privmsg",
+        "quit"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::Log",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "append",
+        "authors",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::MSR206",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "backup_card",
+        "clone_card",
+        "connect",
+        "disconnect",
+        "exec",
+        "get_config",
+        "help",
+        "list_cmds",
+        "load_card_from_file",
+        "read_card",
+        "set_protocol",
+        "update_card",
+        "write_card"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::MailAgent",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "gmail",
+        "help",
+        "hotmail_n_live",
+        "manual",
+        "office365",
+        "yahoo"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::MonkeyPatch",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "pry"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::NessusCloud",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "add_tag_to_assets",
+        "authors",
+        "create_scan",
+        "create_tag",
+        "export_scan_results",
+        "get_assets",
+        "get_canned_scan_templates",
+        "get_credential_types",
+        "get_folders",
+        "get_policies",
+        "get_scan_history",
+        "get_scan_status",
+        "get_scanners",
+        "get_scans",
+        "get_tag_values",
+        "get_target_groups",
+        "get_target_networks",
+        "get_timezones",
+        "help",
+        "launch_scan",
+        "login",
+        "update_scan"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::OAuth2",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "decode",
+        "get_value_by_key",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::PS",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "cleanup_pids",
+        "help",
+        "list"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::PWNLogger",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "create",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::SSN",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "generate",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::Shodan",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "api_info",
+        "authors",
+        "get_uris",
+        "help",
+        "honeypot_probability_scores",
+        "list_on_demand_scan_protocols",
+        "most_popular_tags",
+        "my_profile",
+        "my_pub_ip",
+        "ports_shodan_crawls",
+        "query_result_totals",
+        "saved_search_queries",
+        "scan_internet",
+        "scan_network",
+        "scan_status",
+        "search",
+        "services_by_ips",
+        "services_shodan_crawls",
+        "tokens"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::Sock",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "check_port_in_use",
+        "connect",
+        "disconnect",
+        "get_random_unused_port",
+        "get_tls_cert",
+        "help",
+        "listen"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::TwitterAPI",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "app_only_login",
+        "app_only_logout",
+        "authors",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::URIScheme",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "list_all_known"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::VIN",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "decode_vin",
+        "decode_wmi",
+        "generate_vin",
+        "get_all_makes",
+        "get_all_manufacturers",
+        "get_manufacturer_details",
+        "get_models_for_make",
+        "get_models_for_make_year",
+        "get_vehicle_types_for_make",
+        "get_wmis_for_manufacturer",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::Vault",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "create",
+        "decrypt",
+        "dump",
+        "edit",
+        "encrypt",
+        "file_encrypted?",
+        "help",
+        "refresh_encryption_secrets"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::Voice",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "mutate",
+        "speech_to_text",
+        "text_to_speech"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::XXD",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "calc_addr_offset",
+        "dump",
+        "fill_range_w_byte",
+        "help",
+        "reverse_dump"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Plugins::Zaproxy",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "active_scan",
+        "add_to_scope",
+        "authors",
+        "breakpoint",
+        "generate_scan_report",
+        "get_alerts",
+        "get_sitemap",
+        "help",
+        "import_openapi_to_sitemap",
+        "inject_additional_http_headers",
+        "requester",
+        "spider",
+        "start",
+        "stop",
+        "tamper"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Reports",
+      "depth": 1,
+      "type": "module",
+      "singleton_methods": [
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Reports::Fuzz",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "generate",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Reports::HTMLFooter",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "generate",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Reports::HTMLHeader",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "generate",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Reports::Phone",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "generate",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Reports::SAST",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "generate",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Reports::URIBuster",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "generate",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST",
+      "depth": 1,
+      "type": "module",
+      "singleton_methods": [
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::AMQPConnectAsGuest",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::AWS",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::ApacheFileSystemUtilAPI",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::BannedFunctionCallsC",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::Base64",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::BeefHook",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::CSRF",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::CmdExecutionGoLang",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::CmdExecutionJava",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::CmdExecutionPython",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::CmdExecutionRuby",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::CmdExecutionScala",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::DeserialJava",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::Emoticon",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::Eval",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::Factory",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::HTTPAuthorizationHeader",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::InnerHTML",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::Keystore",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::LocalStorage",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::LocationHash",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::Log4J",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::Logger",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::MD5",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::OuterHTML",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::PHPInputMechanisms",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::PHPTypeJuggling",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::PaddingOracle",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::Password",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::PomVersion",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::Port",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::PostMessage",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::PrivateKey",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::ReDOS",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::Redirect",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::SQL",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::SSL",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::Shell",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::Signature",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::Sudo",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::TaskTag",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::TestCaseEngine",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "execute",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::ThrowErrors",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::Token",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::TypeScriptTypeJuggling",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::UseAfterFree",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::Version",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SAST::WindowLocationHash",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "scan",
+        "security_references"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SDR",
+      "depth": 1,
+      "type": "module",
+      "singleton_methods": [
+        "help",
+        "hz_to_i",
+        "hz_to_s"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SDR::Decoder",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SDR::Decoder::GSM",
+      "depth": 3,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "help",
+        "start",
+        "stop"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SDR::FlipperZero",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "connect",
+        "connect_via_screen",
+        "disconnect",
+        "help",
+        "request"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SDR::FrequencyAllocation",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "band_plans",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SDR::GQRX",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "analyze_log",
+        "analyze_scan",
+        "authors",
+        "cmd",
+        "connect",
+        "disconnect",
+        "disconnect_udp",
+        "help",
+        "init_freq",
+        "listen_udp",
+        "record",
+        "scan_range",
+        "stop_recording"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SDR::RFIDler",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "connect_via_screen",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::SDR::SonMicroRFID",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "backup_tag",
+        "clone_tag",
+        "connect",
+        "disconnect",
+        "exec",
+        "help",
+        "list_cmds",
+        "list_params",
+        "load_tag_from_file",
+        "read_tag",
+        "update_tag",
+        "write_tag"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Targets",
+      "depth": 1,
+      "type": "module",
+      "singleton_methods": [
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Targets::GitHub",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Targets::GitHub::RepoPermissionProofPack",
+      "depth": 3,
+      "type": "module",
+      "singleton_methods": [
+        "apply_gate_to_findings",
+        "authors",
+        "evaluate",
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Targets::GitHub::WorkflowTrust",
+      "depth": 3,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "evaluate_oidc_acceptance",
+        "help",
+        "load_workflows",
+        "scan_repo"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Targets::GitHub::WorkflowTrust::LiveProofPack",
+      "depth": 4,
+      "type": "module",
+      "singleton_methods": [
+        "analyze",
+        "authors",
+        "help",
+        "run"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Targets::GitHub::WorkflowTrust::ReusableWorkflowLineage",
+      "depth": 4,
+      "type": "module",
+      "singleton_methods": [
+        "analyze",
+        "authors",
+        "help",
+        "scan_repo"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::Targets::GitHub::WorkflowTrust::TransitionBundle",
+      "depth": 4,
+      "type": "module",
+      "singleton_methods": [
+        "analyze",
+        "authors",
+        "help",
+        "run"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW",
+      "depth": 1,
+      "type": "module",
+      "singleton_methods": [
+        "help"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW::AppCobaltIO",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "close",
+        "help",
+        "login",
+        "logout",
+        "open"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW::Bing",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "close",
+        "help",
+        "open",
+        "search"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW::BugCrowd",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "close",
+        "help",
+        "login",
+        "logout",
+        "open"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW::CoinbasePro",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "close",
+        "help",
+        "login",
+        "logout",
+        "open"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW::Duckduckgo",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "close",
+        "help",
+        "onion",
+        "open",
+        "search"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW::Facebook",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "close",
+        "help",
+        "login",
+        "logout",
+        "open"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW::Google",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "close",
+        "help",
+        "open",
+        "search",
+        "search_linkedin_for_employees_by_company"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW::HackerOne",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "close",
+        "get_bounty_programs",
+        "get_hacktivity",
+        "get_scope_details",
+        "help",
+        "login",
+        "logout",
+        "open",
+        "save_burp_target_config_file"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW::Linkedin",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "close",
+        "help",
+        "login",
+        "logout",
+        "open"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW::Pandora",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "close",
+        "help",
+        "login",
+        "logout",
+        "open"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW::Pastebin",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "close",
+        "help",
+        "onion",
+        "open"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW::Paypal",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "close",
+        "help",
+        "login",
+        "logout",
+        "open",
+        "signup"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW::Synack",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "close",
+        "help",
+        "login",
+        "logout",
+        "open"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW::Torch",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "close",
+        "help",
+        "onion",
+        "open",
+        "search"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW::TradingView",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "close",
+        "help",
+        "login",
+        "logout",
+        "open"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW::Twitter",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "close",
+        "help",
+        "login",
+        "logout",
+        "open"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW::Uber",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "close",
+        "help",
+        "login",
+        "logout",
+        "open"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW::Upwork",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "close",
+        "help",
+        "login",
+        "logout",
+        "open"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW::WaybackMachine",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "close",
+        "help",
+        "open",
+        "search",
+        "timetravel"
+      ],
+      "instance_methods": []
+    },
+    {
+      "path": "PWN::WWW::Youtube",
+      "depth": 2,
+      "type": "module",
+      "singleton_methods": [
+        "authors",
+        "close",
+        "help",
+        "open",
+        "search"
+      ],
+      "instance_methods": []
+    }
+  ]
+}

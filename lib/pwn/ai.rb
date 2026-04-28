@@ -8,6 +8,7 @@ module PWN
     autoload :Agent, 'pwn/ai/agent'
     autoload :Grok, 'pwn/ai/grok'
     autoload :Introspection, 'pwn/ai/introspection'
+    autoload :MCP, 'pwn/ai/mcp'
     autoload :Ollama, 'pwn/ai/ollama'
     autoload :OpenAI, 'pwn/ai/open_ai'
 

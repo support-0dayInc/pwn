@@ -7,6 +7,7 @@
   * [How PWN Works](#how-pwn-works)
 - [Installation](#installation)
 - [General Usage](#general-usage)
+- [MCP Usage](#mcp-usage)
 - [Call to Arms](#call-to-arms)
 - [Module Documentation](#module-documentation)
 - [Keep Us Caffeinated](#keep-us-caffeinated)
@@ -70,6 +71,22 @@ PWN periodically upgrades to the latest version of Ruby which is reflected in `/
 $ /opt/pwn/vagrant/provisioners/pwn.sh
 ```
 This should update Ruby, create the necessary pwn gemset within the latest Ruby version, etc.  It's important to note that if you're running an older version of ruby, you can only upgrade the `pwn` gem to the latest version supported by the earlier version of Ruby.
+
+### **MCP Usage** ###
+PWN now ships an MCP server namespace at `PWN::AI::MCP` for direct LLM integrations.
+
+Start MCP stdio server:
+```
+$ bin/pwn_ai_mcp
+```
+
+Exposed tools:
+- `pwn.help` - list top-level namespaces
+- `pwn.inventory_recursive` - recursively inventory modules/classes and methods
+- `pwn.methods` - inspect methods for one constant path
+- `pwn.invoke` - invoke public PWN methods with safety policy checks
+
+`pwn.invoke` requires `confirm_dangerous=true` for methods flagged by policy as potentially destructive.
 
 
 ### **Call to Arms** ###
