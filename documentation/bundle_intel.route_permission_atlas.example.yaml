@@ -1,0 +1,36 @@
+run_id: bundle-intel-route-permission-atlas-example
+target: https://app.example.test
+base_url: https://app.example.test
+max_entries: 30
+
+html:
+  - |
+    <html>
+      <a href="/admin/users">Admin Users</a>
+      <a href="/api/v1/projects">Projects API</a>
+      <script src="/static/app.bundle.js"></script>
+    </html>
+
+js_bundles:
+  - |
+    const feature_admin_portal_enabled = true;
+    const route = '/beta/admin/roles';
+    const PERM = 'project:write';
+    query AdminUsers { users { id email role } }
+
+source_maps:
+  - |
+    sourcesContent:
+      - "mutation PromoteMember { promoteMember(id:\"123\") { id } }"
+      - "https://api.example.test/internal/reports/export"
+
+burp_responses:
+  - |
+    {
+      "request": {
+        "url": "https://app.example.test/api/v1/members"
+      },
+      "response": {
+        "body": "role:admin feature_flag_internal_dashboard=true"
+      }
+    }

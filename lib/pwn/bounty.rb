@@ -6,6 +6,7 @@ module PWN
   # http://www.rubyinside.com/ruby-techniques-revealed-autoload-1652.html
   module Bounty
     autoload :BrowserChains, 'pwn/bounty/browser_chains'
+    autoload :BundleIntel, 'pwn/bounty/bundle_intel'
     autoload :GraphQLAuthzDiff, 'pwn/bounty/graphql_authz_diff'
     autoload :LifecycleAuthzReplay, 'pwn/bounty/lifecycle_authz_replay'
     autoload :ScopeIntel, 'pwn/bounty/scope_intel'
