@@ -11,6 +11,7 @@ module PWN
     # pre/post state transitions (e.g., collaborator removal, role change,
     # project visibility flips) with report-ready artifacts.
     module LifecycleAuthzReplay
+      autoload :ArtifactAccessDriftMatrix, 'pwn/bounty/lifecycle_authz_replay/artifact_access_drift_matrix'
       autoload :CaptureAdapters, 'pwn/bounty/lifecycle_authz_replay/capture_adapters'
       autoload :RoutePackCompleteness, 'pwn/bounty/lifecycle_authz_replay/route_pack_completeness'
 
@@ -623,6 +624,9 @@ module PWN
         missing_cells = coverage_cells.select { |cell| cell[:status] == 'missing' }
         stale_access_findings = find_stale_access_findings(run_obj: run_obj)
         mixed_surface_findings = find_mixed_surface_findings(run_obj: run_obj)
+        artifact_access_drift = PWN::Bounty::LifecycleAuthzReplay::ArtifactAccessDriftMatrix.evaluate(
+          run_obj: run_obj
+        )
 
         route_pack_completeness = PWN::Bounty::LifecycleAuthzReplay::RoutePackCompleteness.evaluate(
           run_obj: run_obj
@@ -641,12 +645,14 @@ module PWN
             missing_cells: missing_cells.length,
             stale_access_findings: stale_access_findings.length,
             mixed_surface_findings: mixed_surface_findings.length,
+            artifact_access_drift_findings: artifact_access_drift[:reportable_candidate_count],
             route_report_blockers: route_pack_completeness[:report_blocker_count],
             route_confidence_drops: route_pack_completeness[:confidence_drop_count],
             route_completion_score: route_pack_completeness[:completion_score]
           },
           stale_access_findings: stale_access_findings,
           mixed_surface_findings: mixed_surface_findings,
+          artifact_access_drift: artifact_access_drift,
           missing_cells: missing_cells,
           route_pack_completeness: route_pack_completeness
         }
@@ -776,6 +782,10 @@ module PWN
             )
 
             completeness = PWN::Bounty::LifecycleAuthzReplay::RoutePackCompleteness.evaluate(
+              run_obj: run_obj
+            )
+
+            artifact_drift = PWN::Bounty::LifecycleAuthzReplay::ArtifactAccessDriftMatrix.evaluate(
               run_obj: run_obj
             )
         HELP
@@ -1051,6 +1061,23 @@ module PWN
         else
           summary[:mixed_surface_findings].each do |finding|
             lines << "- checkpoint=`#{finding[:checkpoint]}` actor=`#{finding[:actor]}` direct_denied=`#{finding[:direct_denied_surfaces].join(',')}` secondary_visible=`#{finding[:secondary_accessible_surfaces].join(',')}`"
+          end
+        end
+
+        lines << ''
+        lines << '## Artifact Access Drift Matrix'
+        artifact_drift = symbolize_obj(summary[:artifact_access_drift] || {})
+        lines << "- Object Families: `#{artifact_drift[:family_count] || 0}`"
+        lines << "- Reportable Candidates: `#{artifact_drift[:reportable_candidate_count] || 0}`"
+
+        if Array(artifact_drift[:families]).empty?
+          lines << '- No direct-denied/derived-accessible artifact drift observed in this run.'
+        else
+          Array(artifact_drift[:families]).each do |family|
+            family_hash = symbolize_obj(family)
+            lines << "- family=`#{family_hash[:family_key]}` angle=`#{family_hash[:report_angle]}`"
+            lines << "  - direct_denied=`#{family_hash[:direct_denied]}` derived_accessible=`#{family_hash[:derived_accessible]}`"
+            lines << "  - surviving_derived_routes=`#{Array(family_hash[:surviving_derived_routes]).join(',')}`"
           end
         end
 

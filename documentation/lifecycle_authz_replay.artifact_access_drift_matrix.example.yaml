@@ -1,0 +1,32 @@
+campaign:
+  id: artifact_drift_demo
+  target: https://example.test
+  change_event: revoke_access
+
+actors:
+  - revoked_user
+
+checkpoints:
+  - pre_change
+  - post_change_t0
+
+expected_denied_after:
+  - post_change_t0
+
+surfaces:
+  - id: canonical_object_api
+    label: Canonical Object API
+    metadata:
+      route_family: direct
+  - id: object_export_download
+    label: Object Export Download
+    metadata:
+      route_family: export
+      artifact_access_drift:
+        object_family: object_123
+  - id: object_attachment
+    label: Object Attachment
+    metadata:
+      route_family: artifact
+      artifact_access_drift:
+        object_family: object_123
