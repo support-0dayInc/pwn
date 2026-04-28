@@ -1,0 +1,38 @@
+run_id: lifecycle-owned-account-state-matrix-example
+target: https://app.example.test
+base_url: https://app.example.test
+transition: revoke
+checkpoint_offsets_minutes:
+  - 0
+  - 10
+  - 30
+
+boundary_event:
+  type: membership_revoke
+  object_ref: org/acme/team/security
+  actor_ref: revoked_member
+  notes: revoked member removed from workspace team
+
+actors:
+  - id: revoked_member
+    label: Revoked Member
+    role: subject
+    account_ref: user:revoked_member
+
+  - id: control_member
+    label: Control Member
+    role: control
+    account_ref: user:control_member
+
+route_seeds:
+  - route: /api/v1/team/members/revoke
+    route_family: direct
+    object_family: member
+
+  - route: /api/v1/team/members/status
+    route_family: secondary
+    object_family: member
+
+  - route: /exports/team/members/download
+    route_family: artifact
+    object_family: member

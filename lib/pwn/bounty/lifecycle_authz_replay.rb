@@ -13,6 +13,7 @@ module PWN
     module LifecycleAuthzReplay
       autoload :ArtifactAccessDriftMatrix, 'pwn/bounty/lifecycle_authz_replay/artifact_access_drift_matrix'
       autoload :CaptureAdapters, 'pwn/bounty/lifecycle_authz_replay/capture_adapters'
+      autoload :OwnedAccountStateMatrix, 'pwn/bounty/lifecycle_authz_replay/owned_account_state_matrix'
       autoload :RoutePackCompleteness, 'pwn/bounty/lifecycle_authz_replay/route_pack_completeness'
       autoload :SubmissionBundle, 'pwn/bounty/lifecycle_authz_replay/submission_bundle'
 
@@ -789,6 +790,11 @@ module PWN
 
             summary = PWN::Bounty::LifecycleAuthzReplay.finalize_run(
               run_obj: run_obj
+            )
+
+            owned_account_matrix = PWN::Bounty::LifecycleAuthzReplay::OwnedAccountStateMatrix.run(
+              yaml_path: '/path/to/lifecycle_authz_replay.owned_account_state_matrix.example.yaml',
+              output_dir: '/tmp/evidence-bundles'
             )
 
             completeness = PWN::Bounty::LifecycleAuthzReplay::RoutePackCompleteness.evaluate(
