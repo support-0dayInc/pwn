@@ -1,0 +1,35 @@
+run_id: sensitive-file-exposure-example
+target: https://staging.example.test
+campaign: staging-secret-leakage
+
+hosts:
+  - https://staging.example.test
+  - admin.example.test
+
+candidate_paths:
+  - /.env.local
+  - /config/production.yml
+
+max_candidates: 40
+
+observations:
+  - id: env_leak
+    url: https://staging.example.test/.env
+    http_status: 200
+    auth_state: unauthenticated
+    content_type: text/plain
+    body: |
+      APP_ENV=staging
+      AWS_ACCESS_KEY_ID=AKIA1234567890ABCDEF
+      AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+      DB_PASSWORD=sup3rsecret
+      ADMIN_EMAIL=ops@example.test
+
+  - id: debug_dump
+    url: https://admin.example.test/debug.log
+    http_status: 200
+    auth_state: authenticated
+    content_type: text/plain
+    body: |
+      [debug] user=alice@example.test
+      bearer_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aW50ZXJuYWwtdGVzdC10b2tlbg.signaturepart

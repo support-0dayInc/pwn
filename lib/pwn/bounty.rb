@@ -9,6 +9,7 @@ module PWN
     autoload :GraphQLAuthzDiff, 'pwn/bounty/graphql_authz_diff'
     autoload :LifecycleAuthzReplay, 'pwn/bounty/lifecycle_authz_replay'
     autoload :ScopeIntel, 'pwn/bounty/scope_intel'
+    autoload :SensitiveFileExposurePack, 'pwn/bounty/sensitive_file_exposure_pack'
 
     # Display a List of Every PWN::Bounty Module
 
