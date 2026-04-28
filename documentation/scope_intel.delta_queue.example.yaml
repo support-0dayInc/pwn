@@ -1,0 +1,55 @@
+program_name: example-program
+max_queue_entries: 25
+
+# Optional snapshot/output paths
+# snapshot_dir: /tmp/scope-intel-snapshots
+# output_dir: /tmp/scope-intel-delta-queue
+
+# Optional scope_details object from HackerOne APIs can be passed directly.
+# scope_details: {}
+
+# Example direct old/new scope input mode:
+old_scope_intel:
+  program_name: example-program
+  rows:
+    - identifier: https://app.example.test
+      display_name: Main App
+      asset_type: web
+      eligible_for_bounty: true
+      eligible_for_submission: true
+      requires_owned_account: true
+      requires_staging: false
+      third_party_excluded: false
+      signup_mode: researcher_owned_account
+      acquired_brand: null
+      instruction: auth app
+      notes: owned_account_required
+
+new_scope_intel:
+  program_name: example-program
+  rows:
+    - identifier: https://app.example.test
+      display_name: Main App
+      asset_type: web
+      eligible_for_bounty: true
+      eligible_for_submission: true
+      requires_owned_account: true
+      requires_staging: false
+      third_party_excluded: false
+      signup_mode: researcher_owned_account
+      acquired_brand: null
+      instruction: auth app
+      notes: owned_account_required
+
+    - identifier: https://admin-beta.example.test
+      display_name: Admin Beta
+      asset_type: web
+      eligible_for_bounty: true
+      eligible_for_submission: true
+      requires_owned_account: true
+      requires_staging: true
+      third_party_excluded: false
+      signup_mode: researcher_owned_account
+      acquired_brand: null
+      instruction: beta admin panel
+      notes: staging_or_beta_surface

@@ -8,6 +8,7 @@ module PWN
     # ScopeIntel compiles HackerOne scope payloads into normalized rows and
     # helper utilities for filtering and delta analysis.
     module ScopeIntel
+      autoload :DeltaQueue, 'pwn/bounty/scope_intel/delta_queue'
       # Supported Method Parameters::
       # scope_intel = PWN::Bounty::ScopeIntel.compile(
       #   program_name: 'required if scope_details omitted',
@@ -241,6 +242,12 @@ module PWN
             diff = PWN::Bounty::ScopeIntel.diff_rows(
               old_scope_intel: old_scope_intel,
               new_scope_intel: new_scope_intel
+            )
+
+            delta_queue = PWN::Bounty::ScopeIntel::DeltaQueue.run(
+              old_scope_intel: old_scope_intel,
+              new_scope_intel: new_scope_intel,
+              output_dir: '/tmp/scope-intel-delta-queue'
             )
         HELP
       end
