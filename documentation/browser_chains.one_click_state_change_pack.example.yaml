@@ -1,0 +1,39 @@
+run_id: browser-chain-one-click-example
+target: https://app.example.test
+campaign: stored-xss-email-change
+
+observations:
+  - id: attacker_payload
+    checkpoint: attacker_prepare
+    actor: attacker
+    primitive: xss
+    status: triggered
+    notes: Stored XSS payload persisted in profile bio and reflected in victim dashboard.
+
+  - id: victim_click
+    checkpoint: victim_click
+    actor: victim
+    status: confirmed
+    signals:
+      - victim_action_triggered
+    notes: Victim clicked attacker-shared link once from an authenticated session.
+
+  - id: post_state_change
+    checkpoint: post_action
+    actor: victim
+    status: confirmed
+    signals:
+      - state_change_account
+      - csrf_token_reuse_present
+    notes: Account email changed to attacker mailbox and reused CSRF token remained valid.
+
+controls:
+  - id: logged_out_replay
+    kind: negative
+    passed: true
+    notes: Logged-out replay fails and cannot trigger account mutation.
+
+  - id: clean_session_control
+    kind: positive
+    passed: true
+    notes: Control account can reproduce victim-click chain with deterministic state change.
