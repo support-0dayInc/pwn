@@ -1,0 +1,44 @@
+{
+  "generated_at": "2026-04-28T00:00:00Z",
+  "provider": "aws",
+  "replay_ready": true,
+  "critical_candidate": true,
+  "impact_label": "critical_candidate",
+  "primary_candidate": {
+    "id": "broad-branch-policy:t1:stale_acceptance",
+    "policy_name": "broad-branch-policy",
+    "from_snapshot": "before_narrowing",
+    "to_snapshot": "after_narrowing",
+    "narrowing_fields": [
+      "sub"
+    ]
+  },
+  "experiment_matrix": [
+    {
+      "id": "control_replay",
+      "phase": "baseline",
+      "token_label": "latest_token"
+    },
+    {
+      "id": "stale_acceptance_replay",
+      "phase": "vuln_probe",
+      "token_label": "before_narrowing"
+    },
+    {
+      "id": "trust_tightening_validation",
+      "phase": "post_fix_control",
+      "token_label": "stale_token + latest_token"
+    }
+  ],
+  "aws_policy_pack": {
+    "provider": "aws",
+    "tightening_summary": {
+      "mutated_fields": [
+        "sub",
+        "aud"
+      ],
+      "pinned_sub": "repo:acme/repo:ref:refs/heads/main",
+      "pinned_aud": "sts.amazonaws.com"
+    }
+  }
+}

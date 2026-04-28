@@ -11,6 +11,7 @@ module PWN
       # Parse GitHub Actions workflows into a privilege/trust graph and
       # rank high-signal CI/CD exploit hypotheses.
       module WorkflowTrust
+        autoload :ArtifactPrivilegeBridgePack, 'pwn/targets/github/workflow_trust/artifact_privilege_bridge_pack'
         autoload :FixtureUpgradeStepPack, 'pwn/targets/github/workflow_trust/fixture_upgrade_step_pack'
         autoload :LiveProofPack, 'pwn/targets/github/workflow_trust/live_proof_pack'
         autoload :ReusableWorkflowLineage, 'pwn/targets/github/workflow_trust/reusable_workflow_lineage'
@@ -205,8 +206,19 @@ module PWN
                 candidate_id: opts[:candidate_id]
               )
 
+              artifact_privilege_bridge_pack = PWN::Targets::GitHub::WorkflowTrust::ArtifactPrivilegeBridgePack.analyze(
+                transition_bundle: transition_bundle,
+                live_proof_pack: live_proof_pack,
+                trust_policies: trust_policies,
+                provider: opts[:provider],
+                candidate_id: opts[:candidate_id],
+                allowed_audiences: opts[:allowed_audiences]
+              )
+
               result[:live_proof_pack] = live_proof_pack
+              result[:artifact_privilege_bridge_pack] = artifact_privilege_bridge_pack
               result[:replay_ready] = live_proof_pack.dig(:replay_readiness, :ready) == true
+              result[:critical_candidate] = artifact_privilege_bridge_pack[:critical_candidate] == true
             end
           end
 
@@ -254,6 +266,13 @@ module PWN
                 transition_bundle: transition_report,
                 later_snapshot: '/tmp/later_token_snapshot.json',
                 output_dir: '/tmp/workflow-trust-live-proof-pack'
+              )
+
+              bridge_pack = PWN::Targets::GitHub::WorkflowTrust::ArtifactPrivilegeBridgePack.run(
+                transition_bundle: transition_report,
+                live_proof_pack: live_proof,
+                trust_policies: '/tmp/trust_policies.json',
+                output_dir: '/tmp/workflow-trust-bridge-pack'
               )
 
               lineage = PWN::Targets::GitHub::WorkflowTrust::ReusableWorkflowLineage.scan_repo(
@@ -748,6 +767,16 @@ module PWN
           lines << "- OIDC Claims: `#{oidc_summary[:oidc_claim_count]}`"
           lines << "- Broad Acceptance Policies: `#{oidc_summary[:broad_acceptance_policy_count]}`"
           lines << "- Untrusted Claim Acceptances: `#{oidc_summary[:untrusted_claim_acceptance_count]}`"
+
+          bridge_pack = symbolize_obj(oidc_summary[:artifact_privilege_bridge_pack] || {})
+          unless bridge_pack.empty?
+            lines << ''
+            lines << '## Artifact Privilege Bridge Pack'
+            lines << "- Provider: `#{bridge_pack[:provider]}`"
+            lines << "- Replay Ready: `#{bridge_pack[:replay_ready]}`"
+            lines << "- Critical Candidate: `#{bridge_pack[:critical_candidate]}`"
+            lines << "- Matrix Steps: `#{Array(bridge_pack[:experiment_matrix]).length}`"
+          end
 
           lines << ''
           lines << '## Reusable Workflow Lineage'
