@@ -4,6 +4,7 @@ module PWN
   module Bounty
     # Agentic surface discovery and abuse-chain planning helpers.
     module AgenticSurface
+      autoload :PromptReplayHarness, 'pwn/bounty/agentic_surface/prompt_replay_harness'
       autoload :ToolPermissionAtlas, 'pwn/bounty/agentic_surface/tool_permission_atlas'
 
       # Display Usage Information
