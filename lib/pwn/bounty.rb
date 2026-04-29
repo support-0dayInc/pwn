@@ -5,6 +5,7 @@ module PWN
   # into memory only when they're needed. For more information, see:
   # http://www.rubyinside.com/ruby-techniques-revealed-autoload-1652.html
   module Bounty
+    autoload :AgenticSurface, 'pwn/bounty/agentic_surface'
     autoload :BrowserChains, 'pwn/bounty/browser_chains'
     autoload :BundleIntel, 'pwn/bounty/bundle_intel'
     autoload :GraphQLAuthzDiff, 'pwn/bounty/graphql_authz_diff'
