@@ -16,6 +16,7 @@ module PWN
   autoload :Bounty, 'pwn/bounty'
   autoload :Blockchain, 'pwn/blockchain'
   autoload :Config, 'pwn/config'
+  autoload :Crypto, 'pwn/crypto'
   autoload :Driver, 'pwn/driver'
   autoload :Exploits, 'pwn/exploits'
   autoload :FFI, 'pwn/ffi'
